@@ -1,4 +1,6 @@
 
+using ExaminationSystem.Extensions.Infrastructure;
+
 namespace ExaminationSystem
 {
     public class Program
@@ -14,6 +16,13 @@ namespace ExaminationSystem
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            #region Dependency Injection Services
+            
+            // InfraStructure
+            builder.Services.AddInfraStructureServices(builder.Configuration);
+            
+            #endregion
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
