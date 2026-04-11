@@ -1,9 +1,12 @@
 
+using ExaminationSystem.Contracts.Seed;
+using ExaminationSystem.Extensions.Infrastructure;
+
 namespace ExaminationSystem
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +17,13 @@ namespace ExaminationSystem
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            #region Dependency Injection Services
+            
+            // InfraStructure
+            builder.Services.AddInfraStructureServices(builder.Configuration);
+            
+            #endregion
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -27,8 +37,16 @@ namespace ExaminationSystem
 
             app.UseAuthorization();
 
-
             app.MapControllers();
+            
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var seeder = services.GetRequiredService<IDataSeeding>();
+    
+                await seeder.DataSeedAsync();
+                await seeder.IdentityDataSeedAsync();
+            }
 
             app.Run();
         }
