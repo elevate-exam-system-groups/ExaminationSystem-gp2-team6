@@ -2,7 +2,7 @@
 
 namespace ExaminationSystem.Common.Views
 {
-    public class RequestResult<T> (T Data, bool IsSuccess, string Message, ErrorCode ErrorCode)
+    public record RequestResult<T>(T Data, bool IsSuccess, string Message, ErrorCode ErrorCode)
     {
         public static RequestResult<T> Success(T data, string message = "")
             => new(data, true, message, ErrorCode.NoError);

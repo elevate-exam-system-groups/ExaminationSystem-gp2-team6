@@ -1,6 +1,7 @@
 using ExaminationSystem.Domain.Entities.AnswerOption;
 using ExaminationSystem.Domain.Entities.Diploma;
 using ExaminationSystem.Domain.Entities.Question;
+using ExaminationSystem.Domain.Entities.Diploma;
 using ExaminationSystem.Domain.Entities.Quiz;
 using ExaminationSystem.Domain.Entities.User;
 using Microsoft.AspNetCore.Identity;
@@ -29,4 +30,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
     public DbSet<AnswerOption> AnswerOptions { get; set; }
     
     public DbSet<Quiz> Quizzes { get; set; }
+
+    public DbSet<QuizAttempt> QuizAttempts { get; set; }
+
+    public DbSet<StudentDiplomaEnrollment> StudentDiplomaEnrollments { get; set; }
 }
