@@ -20,7 +20,6 @@ public class StudentDashboardController : ControllerBase
         _mediator = mediator;
     }
 
-    /// <summary>Returns the authenticated student's dashboard (enrolled diplomas, recent quiz attempts, aggregate stats).</summary>
     [HttpGet("dashboard")]
     [ProducesResponseType(typeof(EndpointResponse<StudentDashboardResponseDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

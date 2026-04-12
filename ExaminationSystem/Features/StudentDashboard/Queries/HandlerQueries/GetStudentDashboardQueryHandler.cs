@@ -4,30 +4,20 @@ using ExaminationSystem.Features.StudentDashboard.Queries;
 using ExaminationSystem.Infrastructure.Persistence.DB.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace ExaminationSystem.Features.StudentDashboard.Queries.HandlerQueries;
 
 public class GetStudentDashboardQueryHandler : IRequestHandler<GetStudentDashboardQuery, RequestResult<StudentDashboardResponseDto>>
 {
-    private const string CacheKeyPrefix = "student_dashboard_";
-    private static readonly TimeSpan CacheDuration = TimeSpan.FromSeconds(60);
-
     private readonly AppDbContext _db;
-    private readonly IMemoryCache _cache;
 
-    public GetStudentDashboardQueryHandler(AppDbContext db, IMemoryCache cache)
+    public GetStudentDashboardQueryHandler(AppDbContext db)
     {
         _db = db;
-        _cache = cache;
     }
 
     public async Task<RequestResult<StudentDashboardResponseDto>> Handle(GetStudentDashboardQuery request, CancellationToken cancellationToken)
     {
-        var cacheKey = CacheKeyPrefix + request.StudentId;
-        if (_cache.TryGetValue(cacheKey, out StudentDashboardResponseDto? cached) && cached is not null)
-            return RequestResult<StudentDashboardResponseDto>.Success(cached);
-
         var enrolledDiplomas = await _db.StudentDiplomaEnrollments
             .AsNoTracking()
             .Where(e => e.StudentId == request.StudentId)
@@ -89,8 +79,6 @@ public class GetStudentDashboardQueryHandler : IRequestHandler<GetStudentDashboa
             RecentQuizAttempts = recentAttempts,
             OverallStats = overallStats
         };
-
-        _cache.Set(cacheKey, response, new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = CacheDuration });
 
         return RequestResult<StudentDashboardResponseDto>.Success(response);
     }

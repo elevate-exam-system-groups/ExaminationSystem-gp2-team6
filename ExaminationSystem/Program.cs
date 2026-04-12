@@ -1,7 +1,9 @@
 using System.Security.Claims;
 using System.Text;
+using ExaminationSystem.Common.Behaviors;
 using ExaminationSystem.Contracts.Seed;
 using ExaminationSystem.Extensions.Infrastructure;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -21,7 +23,11 @@ namespace ExaminationSystem
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddMemoryCache();
-            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+            builder.Services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+                cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
+            });
 
             var jwtKey = builder.Configuration["Jwt:Key"]
                          ?? throw new InvalidOperationException("Jwt:Key is not configured.");
