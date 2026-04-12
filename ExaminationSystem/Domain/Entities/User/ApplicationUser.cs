@@ -1,3 +1,5 @@
+using ExaminationSystem.Domain.Entities.Diploma;
+using ExaminationSystem.Domain.Entities.Quiz;
 using ExaminationSystem.Domain.Entities.Shared.Enums.User;
 using Microsoft.AspNetCore.Identity;
 
@@ -16,4 +18,8 @@ public class ApplicationUser: IdentityUser<Guid>
     public UserType UserType { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public ICollection<StudentDiplomaEnrollment> StudentDiplomaEnrollments { get; set; } = new HashSet<StudentDiplomaEnrollment>();
+
+    public ICollection<QuizAttempt> QuizAttempts { get; set; } = new HashSet<QuizAttempt>();
 }
