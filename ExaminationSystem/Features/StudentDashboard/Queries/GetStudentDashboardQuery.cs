@@ -1,4 +1,5 @@
 using ExaminationSystem.Common.Views;
+using ExaminationSystem.Features.StudentDashboard;
 using MediatR;
 
 namespace ExaminationSystem.Features.StudentDashboard.Queries;

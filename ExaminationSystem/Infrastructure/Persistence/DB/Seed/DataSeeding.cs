@@ -1,4 +1,6 @@
 using ExaminationSystem.Contracts.Seed;
+using ExaminationSystem.Domain.Entities.Diploma;
+using ExaminationSystem.Domain.Entities.Quiz;
 using ExaminationSystem.Domain.Entities.User;
 using ExaminationSystem.Infrastructure.Persistence.DB.Context;
 using ExaminationSystem.Infrastructure.Persistence.DB.Seed.Data.AnswerOption;
@@ -115,5 +117,49 @@ public class DataSeeding : IDataSeeding
             Console.WriteLine($"Error while saving seeded data: {ex.Message}");
             throw;
         }
+
+        await SeedStudentDashboardSampleDataAsync();
+    }
+
+    private async Task SeedStudentDashboardSampleDataAsync()
+    {
+        if (_context.StudentDiplomaEnrollments.Any())
+            return;
+
+        var student = await _userManager.FindByEmailAsync("test@gmail.com");
+        if (student is null)
+            return;
+
+        await _context.StudentDiplomaEnrollments.AddRangeAsync(
+            new StudentDiplomaEnrollment
+            {
+                StudentId = student.Id,
+                DiplomaId = 1,
+                EnrolledAt = DateTime.UtcNow
+            },
+            new StudentDiplomaEnrollment
+            {
+                StudentId = student.Id,
+                DiplomaId = 2,
+                EnrolledAt = DateTime.UtcNow
+            });
+
+        await _context.QuizAttempts.AddRangeAsync(
+            new QuizAttempt
+            {
+                StudentId = student.Id,
+                QuizId = 1,
+                Score = 75,
+                SubmittedAt = DateTime.UtcNow.AddDays(-2)
+            },
+            new QuizAttempt
+            {
+                StudentId = student.Id,
+                QuizId = 2,
+                Score = 55,
+                SubmittedAt = DateTime.UtcNow.AddDays(-1)
+            });
+
+        await _context.SaveChangesAsync();
     }
 }

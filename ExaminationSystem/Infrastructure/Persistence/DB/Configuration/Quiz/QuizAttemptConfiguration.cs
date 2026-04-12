@@ -23,6 +23,6 @@ public class QuizAttemptConfiguration : IEntityTypeConfiguration<QuizAttempt>
             .HasForeignKey(a => a.QuizId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasQueryFilter(a => !a.IsDeleted);
+        builder.HasQueryFilter(a => !a.IsDeleted && !a.Quiz.IsDeleted);
     }
 }

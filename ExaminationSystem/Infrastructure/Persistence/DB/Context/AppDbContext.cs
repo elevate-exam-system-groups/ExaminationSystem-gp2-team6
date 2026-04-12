@@ -1,7 +1,6 @@
 using ExaminationSystem.Domain.Entities.AnswerOption;
 using ExaminationSystem.Domain.Entities.Diploma;
 using ExaminationSystem.Domain.Entities.Question;
-using ExaminationSystem.Domain.Entities.Diploma;
 using ExaminationSystem.Domain.Entities.Quiz;
 using ExaminationSystem.Domain.Entities.User;
 using Microsoft.AspNetCore.Identity;

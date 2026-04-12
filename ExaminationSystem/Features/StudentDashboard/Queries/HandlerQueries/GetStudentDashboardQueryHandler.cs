@@ -1,4 +1,6 @@
 using ExaminationSystem.Common.Views;
+using ExaminationSystem.Features.StudentDashboard;
+using ExaminationSystem.Features.StudentDashboard.Queries;
 using ExaminationSystem.Infrastructure.Persistence.DB.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -42,12 +44,14 @@ public class GetStudentDashboardQueryHandler : IRequestHandler<GetStudentDashboa
         var attemptRows = await _db.QuizAttempts
             .AsNoTracking()
             .Where(a => a.StudentId == request.StudentId)
-            .Select(a => new AttemptRow(
+            .Select(a => new
+            {
                 a.Id,
                 a.SubmittedAt,
                 a.Score,
-                a.Quiz.Title,
-                a.Quiz.PassScore))
+                QuizTitle = a.Quiz.Title,
+                PassScore = a.Quiz.PassScore
+            })
             .ToListAsync(cancellationToken);
 
         var recentAttempts = attemptRows
@@ -63,7 +67,21 @@ public class GetStudentDashboardQueryHandler : IRequestHandler<GetStudentDashboa
             })
             .ToList();
 
-        var overallStats = BuildOverallStats(attemptRows);
+        OverallStatsDto overallStats;
+        if (attemptRows.Count == 0)
+        {
+            overallStats = new OverallStatsDto();
+        }
+        else
+        {
+            var passed = attemptRows.Count(a => a.Score >= a.PassScore);
+            overallStats = new OverallStatsDto
+            {
+                TotalQuizzesTaken = attemptRows.Count,
+                AverageScore = Math.Round(attemptRows.Average(a => (double)a.Score), 2),
+                PassRate = Math.Round(100.0 * passed / attemptRows.Count, 2)
+            };
+        }
 
         var response = new StudentDashboardResponseDto
         {
@@ -76,20 +94,4 @@ public class GetStudentDashboardQueryHandler : IRequestHandler<GetStudentDashboa
 
         return RequestResult<StudentDashboardResponseDto>.Success(response);
     }
-
-    private static OverallStatsDto BuildOverallStats(List<AttemptRow> rows)
-    {
-        if (rows.Count == 0)
-            return new OverallStatsDto();
-
-        var passed = rows.Count(r => r.Score >= r.PassScore);
-        return new OverallStatsDto
-        {
-            TotalQuizzesTaken = rows.Count,
-            AverageScore = Math.Round(rows.Average(r => (double)r.Score), 2),
-            PassRate = Math.Round(100.0 * passed / rows.Count, 2)
-        };
-    }
-
-    private readonly record struct AttemptRow(int Id, DateTime SubmittedAt, int Score, string QuizTitle, int PassScore);
 }
