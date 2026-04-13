@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using ExaminationSystem.Common.Data;
 using ExaminationSystem.Common.Views;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -38,5 +39,34 @@ public sealed class DiplomasController : ControllerBase
             cancellationToken);
 
         return Ok(EndpointResponse<GetPublishedDiplomasResponseDto>.Success(result.Data));
+    }
+
+    [HttpGet("{diplomaId:int}/quizzes")]
+    [ProducesResponseType(typeof(EndpointResponse<IReadOnlyList<DiplomaQuizItemDto>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EndpointResponse<IReadOnlyList<DiplomaQuizItemDto>>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(EndpointResponse<IReadOnlyList<DiplomaQuizItemDto>>), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<EndpointResponse<IReadOnlyList<DiplomaQuizItemDto>>>> GetDiplomaQuizzes(
+        [FromRoute] int diplomaId,
+        CancellationToken cancellationToken = default)
+    {
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userIdClaim) || !Guid.TryParse(userIdClaim, out var studentId))
+        {
+            return Unauthorized();
+        }
+
+        var result = await _mediator.Send(new GetDiplomaQuizzesQuery(diplomaId, studentId), cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            if (result.ErrorCode == ErrorCode.NotFound)
+                return NotFound(EndpointResponse<IReadOnlyList<DiplomaQuizItemDto>>.Failure(result.ErrorCode, result.Message));
+
+            if (result.ErrorCode == ErrorCode.Unauthorized)
+                return StatusCode(StatusCodes.Status403Forbidden, EndpointResponse<IReadOnlyList<DiplomaQuizItemDto>>.Failure(result.ErrorCode, result.Message));
+        }
+
+        return Ok(EndpointResponse<IReadOnlyList<DiplomaQuizItemDto>>.Success(result.Data));
     }
 }
