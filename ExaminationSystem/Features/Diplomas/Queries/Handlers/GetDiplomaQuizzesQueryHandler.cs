@@ -2,11 +2,12 @@ using ExaminationSystem.Common.Data;
 using ExaminationSystem.Common.Views;
 using ExaminationSystem.Domain.Entities.Shared.Enums.Diploma;
 using ExaminationSystem.Domain.Entities.Shared.Enums.Quiz;
+using ExaminationSystem.Features.Diplomas.Queries;
 using ExaminationSystem.Infrastructure.Persistence.DB.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace ExaminationSystem.Features.Diplomas;
+namespace ExaminationSystem.Features.Diplomas.Queries.Handlers;
 
 public sealed class GetDiplomaQuizzesQueryHandler
     : IRequestHandler<GetDiplomaQuizzesQuery, RequestResult<IReadOnlyList<DiplomaQuizItemDto>>>
