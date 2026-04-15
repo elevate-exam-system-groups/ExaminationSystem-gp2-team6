@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -7,6 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Features\QuizEngine\NewFolder\**" />
+    <Content Remove="Features\QuizEngine\NewFolder\**" />
+    <EmbeddedResource Remove="Features\QuizEngine\NewFolder\**" />
+    <None Remove="Features\QuizEngine\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Features\QuizEngine\StartQuiz\Queries\CheckQuizAttemptsQueryHandler.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="MediatR" Version="14.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
@@ -21,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Features\Common\Quiz\Commands\HandlerCommands\" />
     <Folder Include="Infrastructure\Persistence\DB\Migrations\" />
   </ItemGroup>
 
