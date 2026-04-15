@@ -15,10 +15,8 @@ public class Diploma : BaseEntity<int>
     
     #region Relations
 
-    public ICollection<Quiz.Quiz> Quizzes { get; set; } = new HashSet<Quiz.Quiz>();
-
-    public ICollection<StudentDiplomaEnrollment> StudentEnrollments { get; set; } = new HashSet<StudentDiplomaEnrollment>();
-
+    public ICollection <Quiz.Quiz> Quizzes { get; set; } = new HashSet <Quiz.Quiz>(); // Navigational Property
+    
     #endregion
     
 }

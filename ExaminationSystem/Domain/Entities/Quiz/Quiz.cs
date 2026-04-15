@@ -29,10 +29,8 @@ public class Quiz : BaseEntity<int>
     
     #region Questions
     
-    public ICollection<Question.Question> Questions { get; set; } = new HashSet<Question.Question>();
-
-    public ICollection<QuizAttempt> QuizAttempts { get; set; } = new HashSet<QuizAttempt>();
-
+    public ICollection <Question.Question> Questions { get; set; } = new HashSet <Question.Question>(); // Navigational Property
+    
     #endregion
 
     #endregion

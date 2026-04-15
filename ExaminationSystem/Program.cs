@@ -1,11 +1,6 @@
-using System.Security.Claims;
-using System.Text;
-using ExaminationSystem.Common.Behaviors;
+
 using ExaminationSystem.Contracts.Seed;
 using ExaminationSystem.Extensions.Infrastructure;
-using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 
 namespace ExaminationSystem
 {
@@ -21,33 +16,6 @@ namespace ExaminationSystem
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
-            builder.Services.AddMemoryCache();
-            builder.Services.AddMediatR(cfg =>
-            {
-                cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
-                cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
-            });
-
-            var jwtKey = builder.Configuration["Jwt:Key"]
-                         ?? throw new InvalidOperationException("Jwt:Key is not configured.");
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                        ValidAudience = builder.Configuration["Jwt:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-                        RoleClaimType = ClaimTypes.Role,
-                        NameClaimType = ClaimTypes.NameIdentifier
-                    };
-                });
-            builder.Services.AddAuthorization();
 
             #region Dependency Injection Services
             
@@ -67,7 +35,6 @@ namespace ExaminationSystem
 
             app.UseHttpsRedirection();
 
-            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

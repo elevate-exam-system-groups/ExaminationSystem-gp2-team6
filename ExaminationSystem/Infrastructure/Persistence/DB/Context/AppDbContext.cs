@@ -29,8 +29,4 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
     public DbSet<AnswerOption> AnswerOptions { get; set; }
     
     public DbSet<Quiz> Quizzes { get; set; }
-
-    public DbSet<QuizAttempt> QuizAttempts { get; set; }
-
-    public DbSet<StudentDiplomaEnrollment> StudentDiplomaEnrollments { get; set; }
 }

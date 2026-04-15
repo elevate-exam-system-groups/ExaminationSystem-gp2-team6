@@ -20,9 +20,7 @@ public static class UserDataSeed
         {
             FirstName = "Test",
             LastName = "Test",
-            UserName = "test@gmail.com",
             Email = "test@gmail.com",
-            EmailConfirmed = true,
             UserType = UserType.Student
         }
     };
