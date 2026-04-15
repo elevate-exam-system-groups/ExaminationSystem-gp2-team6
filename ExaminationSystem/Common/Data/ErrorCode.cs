@@ -7,6 +7,8 @@
         AlreadyExists = 2,
         NotAvailable = 3,
         InvalidData = 4,
-        Unauthorized = 5
+        Unauthorized = 5,
+        DatabaseError = 6,
+        AttemptLimitReached = 7
     }
 }
