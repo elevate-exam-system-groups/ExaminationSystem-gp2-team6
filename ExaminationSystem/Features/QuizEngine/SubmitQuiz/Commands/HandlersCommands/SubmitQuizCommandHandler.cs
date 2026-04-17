@@ -1,31 +1,30 @@
 ﻿using ExaminationSystem.Common.Exceptions;
-using ExaminationSystem.Domain.Entities.Attempt;
+using ExaminationSystem.Domain.Contracts;
+using ExaminationSystem.Domain.Entities.QuizAttempt;
 using ExaminationSystem.Domain.Entities.Shared.Enums.AttemptStatus;
-using ExaminationSystem.Infrastructure.Persistence.DB.Context;
+using ExaminationSystem.Infrastructure.Persistence.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExaminationSystem.Features.QuizEngine.SubmitQuiz.Commands.HandlersCommands
 {
-    public sealed class SubmitQuizCommandHandler
-    : IRequestHandler<SubmitQuizCommand, SubmitQuizResult>
+    public sealed class SubmitQuizCommandHandler : IRequestHandler<SubmitQuizCommand, SubmitQuizResult>
     {
-        private readonly AppDbContext _context;
+        private readonly IUnitOfWork _uow;
 
-        public SubmitQuizCommandHandler(AppDbContext context)
-            => _context = context;
-
-        public async Task<SubmitQuizResult> Handle(
-            SubmitQuizCommand request,
-            CancellationToken cancellationToken)
+        public SubmitQuizCommandHandler(IUnitOfWork uow)
         {
-            var attempt = await _context.Attempts
+            _uow = uow;
+        }
+        public async Task<SubmitQuizResult> Handle(SubmitQuizCommand request,CancellationToken cancellationToken)
+        {
+            var attempt = await _uow.QuizAttempts
                 .Include(a => a.Quiz)
                     .ThenInclude(q => q.Questions)
                         .ThenInclude(q => q.AnswerOptions)
                 .Include(a => a.AttemptAnswers)
                 .FirstOrDefaultAsync(a => a.Id == request.AttemptId, cancellationToken)
-                ?? throw new NotFoundException(nameof(Attempt), request.AttemptId);
+                ?? throw new NotFoundException(nameof(QuizAttempt), request.AttemptId);
 
             if (attempt.StudentId != request.StudentId)
                 throw new ForbiddenAccessException();

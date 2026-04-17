@@ -12,7 +12,7 @@ namespace ExaminationSystem.Domain.Entities.AttemptAnswer
 
         #region Relations
 
-        public Attempt.Attempt Attempt { get; set; } = null!;
+        public Domain.Entities.QuizAttempt.QuizAttempt QuizAttempt { get; set; } = null!;
         public Question.Question Question { get; set; } = null!;
         public AnswerOption.AnswerOption? SelectedOption { get; set; }
 

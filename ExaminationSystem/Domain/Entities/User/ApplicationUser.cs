@@ -1,5 +1,5 @@
+using ExaminationSystem.Domain.Entities.QuizAttempt;
 using ExaminationSystem.Domain.Entities.Diploma;
-using ExaminationSystem.Domain.Entities.Quiz;
 using ExaminationSystem.Domain.Entities.Shared.Enums.User;
 using Microsoft.AspNetCore.Identity;
 
@@ -21,5 +21,5 @@ public class ApplicationUser: IdentityUser<Guid>
 
     public ICollection<StudentDiplomaEnrollment> StudentDiplomaEnrollments { get; set; } = new HashSet<StudentDiplomaEnrollment>();
 
-    public ICollection<QuizAttempt> QuizAttempts { get; set; } = new HashSet<QuizAttempt>();
+    public ICollection<Domain.Entities.QuizAttempt.QuizAttempt> QuizAttempts { get; set; } = new HashSet<Domain.Entities.QuizAttempt.QuizAttempt>();
 }

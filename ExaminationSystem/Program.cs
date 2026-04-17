@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using System.Text;
 using ExaminationSystem.Common.Behaviors;
-using ExaminationSystem.Contracts.Seed;
-using ExaminationSystem.Extensions.Infrastructure;
+using ExaminationSystem.Domain.Contracts;
+using ExaminationSystem.Infrastructure.DependencyInjection;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;

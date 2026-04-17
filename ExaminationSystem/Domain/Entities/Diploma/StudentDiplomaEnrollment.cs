@@ -1,8 +1,9 @@
+using ExaminationSystem.Domain.Entities.Shared;
 using ExaminationSystem.Domain.Entities.User;
 
 namespace ExaminationSystem.Domain.Entities.Diploma;
 
-public class StudentDiplomaEnrollment
+public class StudentDiplomaEnrollment:BaseEntity<int>
 {
     public Guid StudentId { get; set; }
 

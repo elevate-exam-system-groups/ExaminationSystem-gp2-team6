@@ -14,7 +14,7 @@ namespace ExaminationSystem.Domain.Entities.AttemptResult
 
         #region Relations
 
-        public Attempt.Attempt Attempt { get; set; } = null!;
+        public Domain.Entities.QuizAttempt.QuizAttempt QuizAttempt { get; set; } = null!;
         public Question.Question Question { get; set; } = null!;
 
         #endregion

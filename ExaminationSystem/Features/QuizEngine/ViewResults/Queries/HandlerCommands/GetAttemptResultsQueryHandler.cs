@@ -1,8 +1,7 @@
 ﻿using ExaminationSystem.Common.Exceptions;
-using ExaminationSystem.Domain.Entities.Attempt;
 using ExaminationSystem.Domain.Entities.Shared.Enums.AttemptStatus;
 using ExaminationSystem.Features.QuizEngine.ViewResults.Dtos;
-using ExaminationSystem.Infrastructure.Persistence.DB.Context;
+using ExaminationSystem.Infrastructure.Persistence.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,10 +19,9 @@ namespace ExaminationSystem.Features.QuizEngine.ViewResults.Queries.HandlerComma
             GetAttemptResultsQuery request,
             CancellationToken cancellationToken)
         {
-            var attempt = await _context.Attempts
-                .AsNoTracking()
+            var attempt = await _context.Attempts.AsNoTracking()
                 .FirstOrDefaultAsync(a => a.Id == request.AttemptId, cancellationToken)
-                ?? throw new NotFoundException(nameof(Attempt), request.AttemptId);
+                ?? throw new NotFoundException(nameof(QuizAttempt), request.AttemptId);
 
             bool isOwner = attempt.StudentId == request.RequesterId;
 

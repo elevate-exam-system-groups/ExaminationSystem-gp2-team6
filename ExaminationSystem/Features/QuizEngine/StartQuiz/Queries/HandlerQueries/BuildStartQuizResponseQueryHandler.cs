@@ -2,22 +2,18 @@
 using ExaminationSystem.Common.Views;
 using ExaminationSystem.Features.QuizEngine.StartQuiz.CreateQuiz;
 using ExaminationSystem.Features.QuizEngine.StartQuiz.Dtos;
-using ExaminationSystem.Infrastructure.Persistence.DB.Context;
+using ExaminationSystem.Infrastructure.Persistence.Context;
 using MediatR;
 
 namespace ExaminationSystem.Features.QuizEngine.StartQuiz.Queries.HandlerQueries
 {
     public class BuildStartQuizResponseQueryHandler : IRequestHandler<BuildStartQuizResponseQuery, RequestResult<IEnumerable<QuestionDto>>>
     {
-        private readonly AppDbContext _db;
         private readonly IMediator _mediator;
-        private readonly IMapper _mapper;
 
-        public BuildStartQuizResponseQueryHandler(AppDbContext db, IMediator mediator, IMapper mapper)
+        public BuildStartQuizResponseQueryHandler(IMediator mediator)
         {
-            _db = db;
             _mediator = mediator;
-            _mapper = mapper;
         }
 
         public async Task<RequestResult<IEnumerable<QuestionDto>>> Handle(BuildStartQuizResponseQuery request, CancellationToken cancellationToken)
