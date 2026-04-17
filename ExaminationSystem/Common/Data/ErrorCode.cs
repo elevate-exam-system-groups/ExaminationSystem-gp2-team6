@@ -10,8 +10,12 @@
         Unauthorized = 5,
         DatabaseError = 6,
         AttemptLimitReached = 7,
+<<<<<<< Updated upstream
         Forbidden = 8,
         Conflict = 9,
-        Gone = 10
+        Gone = 10,
+        ValidationError = 11=======
+        ValidationError = 8
+>>>>>>> Stashed changes
     }
 }
