@@ -9,6 +9,9 @@
         InvalidData = 4,
         Unauthorized = 5,
         DatabaseError = 6,
-        AttemptLimitReached = 7
+        AttemptLimitReached = 7,
+        Forbidden = 8,
+        Conflict = 9,
+        Gone = 10
     }
 }

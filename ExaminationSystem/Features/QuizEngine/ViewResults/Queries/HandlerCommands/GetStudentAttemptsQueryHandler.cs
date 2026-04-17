@@ -1,5 +1,5 @@
 ﻿using ExaminationSystem.Features.QuizEngine.ViewResults.Dtos;
-using ExaminationSystem.Infrastructure.Persistence.DB.Context;
+using ExaminationSystem.Infrastructure.Persistence.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

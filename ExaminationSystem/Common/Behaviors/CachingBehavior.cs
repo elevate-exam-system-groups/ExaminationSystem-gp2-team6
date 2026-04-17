@@ -1,6 +1,6 @@
+using ExaminationSystem.Common.Abstractions;
 using MediatR;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 
 namespace ExaminationSystem.Common.Behaviors;
 

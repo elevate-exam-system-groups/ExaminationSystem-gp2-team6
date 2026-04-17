@@ -1,5 +1,5 @@
 ﻿using ExaminationSystem.Common.Views;
-using ExaminationSystem.Infrastructure.Persistence.DB.Context;
+using ExaminationSystem.Infrastructure.Persistence.Context;
 using MediatR;
 
 namespace ExaminationSystem.Features.Common.Quiz.Queries.HandlerQueries
