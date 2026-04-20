@@ -1,5 +1,5 @@
 using ExaminationSystem.Common.Views;
-using ExaminationSystem.Infrastructure.Persistence.Context;
+using ExaminationSystem.Domain.Contracts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,40 +7,17 @@ namespace ExaminationSystem.Features.StudentDashboard.ViewDashboard.Queries.Hand
 
 public class GetStudentDashboardQueryHandler : IRequestHandler<GetStudentDashboardQuery, RequestResult<StudentDashboardResponseDto>>
 {
-    private readonly AppDbContext _db;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public GetStudentDashboardQueryHandler(AppDbContext db)
+    public GetStudentDashboardQueryHandler(IUnitOfWork unitOfWork)
     {
-        _db = db;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<RequestResult<StudentDashboardResponseDto>> Handle(GetStudentDashboardQuery request, CancellationToken cancellationToken)
     {
-        var enrolledDiplomas = await _db.StudentDiplomaEnrollments
-            .AsNoTracking()
-            .Where(e => e.StudentId == request.StudentId)
-            .Select(e => new EnrolledDiplomaDto
-            {
-                Id = e.Diploma.Id,
-                Title = e.Diploma.Title,
-                Description = e.Diploma.Description,
-                Status = e.Diploma.Status,
-                TotalQuizCount = e.Diploma.Quizzes.Count
-            })
-            .ToListAsync(cancellationToken);
-
-        var attemptRows = await _db.QuizAttempts
-            .AsNoTracking()
-            .Where(a => a.StudentId == request.StudentId)
-            .Select(a => new
-            {
-                a.Id,
-                a.SubmittedAt,
-                a.Score,
-                QuizTitle = a.Quiz.Title,
-                PassScore = a.Quiz.PassScore
-            })
-            .ToListAsync(cancellationToken);
+        var enrolledDiplomas = await GetEnrolledDiplomasAsync(request.StudentId, cancellationToken);
+        var attemptRows = await GetAttemptRowsAsync(request.StudentId, cancellationToken);
 
         var recentAttempts = attemptRows
             .OrderByDescending(a => a.SubmittedAt)
@@ -79,5 +56,46 @@ public class GetStudentDashboardQueryHandler : IRequestHandler<GetStudentDashboa
         };
 
         return RequestResult<StudentDashboardResponseDto>.Success(response);
+    }
+
+    private Task<List<EnrolledDiplomaDto>> GetEnrolledDiplomasAsync(Guid studentId, CancellationToken cancellationToken)
+    {
+        return _unitOfWork.StudentDiplomaEnrollments.GetAll()
+            .AsNoTracking()
+            .Where(e => e.StudentId == studentId)
+            .Select(e => new EnrolledDiplomaDto
+            {
+                Id = e.Diploma.Id,
+                Title = e.Diploma.Title,
+                Description = e.Diploma.Description,
+                Status = e.Diploma.Status,
+                TotalQuizCount = e.Diploma.Quizzes.Count
+            })
+            .ToListAsync(cancellationToken);
+    }
+
+    private Task<List<QuizAttemptRow>> GetAttemptRowsAsync(Guid studentId, CancellationToken cancellationToken)
+    {
+        return _unitOfWork.QuizAttempts.GetAll()
+            .AsNoTracking()
+            .Where(a => a.StudentId == studentId)
+            .Select(a => new QuizAttemptRow
+            {
+                Id = a.Id,
+                SubmittedAt = a.SubmittedAt,
+                Score = a.Score,
+                QuizTitle = a.Quiz.Title,
+                PassScore = a.Quiz.PassScore
+            })
+            .ToListAsync(cancellationToken);
+    }
+
+    private sealed class QuizAttemptRow
+    {
+        public int Id { get; init; }
+        public DateTime? SubmittedAt { get; init; }
+        public double? Score { get; init; }
+        public string QuizTitle { get; init; } = string.Empty;
+        public int PassScore { get; init; }
     }
 }

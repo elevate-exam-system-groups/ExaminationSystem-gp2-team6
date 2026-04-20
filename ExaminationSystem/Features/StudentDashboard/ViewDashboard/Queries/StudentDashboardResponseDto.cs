@@ -30,11 +30,11 @@ public class RecentQuizAttemptDto
 
     public string QuizTitle { get; init; } = null!;
 
-    public int Score { get; init; }
+    public double? Score { get; init; }
 
     public bool Passed { get; init; }
 
-    public DateTime SubmittedAt { get; init; }
+    public DateTime? SubmittedAt { get; init; }
 }
 
 public class OverallStatsDto

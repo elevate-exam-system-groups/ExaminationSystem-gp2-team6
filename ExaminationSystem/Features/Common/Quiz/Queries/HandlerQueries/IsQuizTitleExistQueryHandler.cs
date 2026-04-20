@@ -1,19 +1,22 @@
 ﻿using ExaminationSystem.Common.Views;
-using ExaminationSystem.Infrastructure.Persistence.Context;
+using ExaminationSystem.Domain.Contracts;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExaminationSystem.Features.Common.Quiz.Queries.HandlerQueries
 {
     public class IsQuizTitleExistQueryHandler : IRequestHandler<IsQuizTitleExistQuery, RequestResult<bool>>
     {
-        private readonly AppDbContext _db;
-        public IsQuizTitleExistQueryHandler(AppDbContext db)
+        private readonly IUnitOfWork _unitOfWork;
+        public IsQuizTitleExistQueryHandler(IUnitOfWork unitOfWork)
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
         }
         public async Task<RequestResult<bool>> Handle(IsQuizTitleExistQuery request, CancellationToken cancellationToken)
         {
-            var exists = _db.Quizzes.Any(q => q.Title == request.Title);
+            var exists = await _unitOfWork.Quizzes.GetAll()
+                .AsNoTracking()
+                .AnyAsync(q => q.Title == request.Title, cancellationToken);
             return exists
                 ? RequestResult<bool>.Success(true)
                 : RequestResult<bool>.Failure(ExaminationSystem.Common.Data.ErrorCode.NotFound, "Quiz not found.");

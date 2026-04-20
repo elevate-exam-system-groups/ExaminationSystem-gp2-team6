@@ -1,8 +1,8 @@
 using ExaminationSystem.Common.Views;
+using ExaminationSystem.Domain.Contracts;
 using ExaminationSystem.Domain.Entities.Shared.Enums.Diploma;
 using ExaminationSystem.Features.StudentDashboard.ViewDiplomas;
 using ExaminationSystem.Features.StudentDashboard.ViewDiplomas.Queries;
-using ExaminationSystem.Infrastructure.Persistence.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,11 +12,11 @@ public sealed class GetPublishedDiplomasQueryHandler
     : IRequestHandler<GetPublishedDiplomasQuery, RequestResult<GetPublishedDiplomasResponseDto>>
 {
     private const int MaxPageSize = 100;
-    private readonly AppDbContext _db;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public GetPublishedDiplomasQueryHandler(AppDbContext db)
+    public GetPublishedDiplomasQueryHandler(IUnitOfWork unitOfWork)
     {
-        _db = db;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<RequestResult<GetPublishedDiplomasResponseDto>> Handle(
@@ -26,7 +26,7 @@ public sealed class GetPublishedDiplomasQueryHandler
         var page = request.PageNumber < 1 ? 1 : request.PageNumber;
         var perPage = request.PageSize < 1 ? 10 : Math.Min(request.PageSize, MaxPageSize);
 
-        var baseQuery = _db.Diplomas
+        var baseQuery = _unitOfWork.Diplomas.GetAll()
             .AsNoTracking()
             .Where(d => d.Status == DiplomaStatus.Published);
 

@@ -2,7 +2,6 @@
 using ExaminationSystem.Domain.Contracts;
 using ExaminationSystem.Domain.Entities.QuizAttempt;
 using ExaminationSystem.Domain.Entities.Shared.Enums.AttemptStatus;
-using ExaminationSystem.Infrastructure.Persistence.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +18,7 @@ namespace ExaminationSystem.Features.QuizEngine.SubmitQuiz.Commands.HandlersComm
         public async Task<SubmitQuizResult> Handle(SubmitQuizCommand request,CancellationToken cancellationToken)
         {
             var attempt = await _uow.QuizAttempts
+                .GetAll()
                 .Include(a => a.Quiz)
                     .ThenInclude(q => q.Questions)
                         .ThenInclude(q => q.AnswerOptions)
@@ -83,8 +83,11 @@ namespace ExaminationSystem.Features.QuizEngine.SubmitQuiz.Commands.HandlersComm
             attempt.Score = score;
             attempt.Passed = passed;
 
-            await _context.AttemptResults.AddRangeAsync(results, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
+            foreach (var result in results)
+            {
+                attempt.AttemptResults.Add(result);
+            }
+            await _uow.SaveChangesAsync(cancellationToken);
 
             return new SubmitQuizResult(attempt.Id, score, passed);
         }

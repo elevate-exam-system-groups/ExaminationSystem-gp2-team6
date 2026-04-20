@@ -1,7 +1,8 @@
 ﻿using ExaminationSystem.Common.Exceptions;
+using ExaminationSystem.Domain.Contracts;
+using ExaminationSystem.Domain.Entities.QuizAttempt;
 using ExaminationSystem.Domain.Entities.Shared.Enums.AttemptStatus;
 using ExaminationSystem.Features.QuizEngine.ViewResults.Dtos;
-using ExaminationSystem.Infrastructure.Persistence.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,16 +11,19 @@ namespace ExaminationSystem.Features.QuizEngine.ViewResults.Queries.HandlerComma
     public sealed class GetAttemptResultsQueryHandler
     : IRequestHandler<GetAttemptResultsQuery, AttemptResultsDto>
     {
-        private readonly AppDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public GetAttemptResultsQueryHandler(AppDbContext context)
-            => _context = context;
+        public GetAttemptResultsQueryHandler(IUnitOfWork unitOfWork)
+            => _unitOfWork = unitOfWork;
 
         public async Task<AttemptResultsDto> Handle(
             GetAttemptResultsQuery request,
             CancellationToken cancellationToken)
         {
-            var attempt = await _context.Attempts.AsNoTracking()
+            var attempt = await _unitOfWork.QuizAttempts.GetAll()
+                .AsNoTracking()
+                .Include(a => a.AttemptResults)
+                    .ThenInclude(r => r.Question)
                 .FirstOrDefaultAsync(a => a.Id == request.AttemptId, cancellationToken)
                 ?? throw new NotFoundException(nameof(QuizAttempt), request.AttemptId);
 
@@ -32,11 +36,7 @@ namespace ExaminationSystem.Features.QuizEngine.ViewResults.Queries.HandlerComma
                 throw new ForbiddenAccessException(
                     "Results are not available while the attempt is still in progress.");
 
-            var results = await _context.AttemptResults
-                .AsNoTracking()
-                .Where(r => r.AttemptId == request.AttemptId)
-                .Include(r => r.Question)
-                .ToListAsync(cancellationToken);
+            var results = attempt.AttemptResults;
 
             var perQuestion = results.Select(r => new QuestionResultDto(
                 QuestionId: r.QuestionId,

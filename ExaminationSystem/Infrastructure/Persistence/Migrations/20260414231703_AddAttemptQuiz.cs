@@ -18,7 +18,7 @@ namespace ExaminationSystem.Infrastructure.Persistence.DB.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     QuizId = table.Column<int>(type: "int", nullable: false),
-                    StudentId = table.Column<int>(type: "int", nullable: false),
+                    StudentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     StartedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     SubmittedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
