@@ -1,7 +1,9 @@
 using ExaminationSystem.Domain.Contracts;
 using ExaminationSystem.Domain.Entities.User;
 using ExaminationSystem.Infrastructure.Persistence.Context;
+using ExaminationSystem.Infrastructure.Persistence.Repositories;
 using ExaminationSystem.Infrastructure.Persistence.Seed;
+using Hotel.Persistence.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -31,6 +33,8 @@ public static class InfraStructureServicesExtensions
         
         // Data Seeding
         services.AddScoped<IDataSeeding, DataSeeding>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
         
         return services;
     }

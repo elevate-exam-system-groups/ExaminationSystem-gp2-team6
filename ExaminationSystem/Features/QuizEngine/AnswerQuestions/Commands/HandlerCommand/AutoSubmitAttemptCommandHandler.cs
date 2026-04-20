@@ -10,7 +10,7 @@ namespace ExaminationSystem.Features.QuizEngine.AnswerQuestions.Commands.Handler
     public class AutoSubmitAttemptCommandHandler:IRequestHandler<AutoSubmitAttemptCommand, RequestResult<bool>>
     {
         private readonly IUnitOfWork _uow;
-        AutoSubmitAttemptCommandHandler(IUnitOfWork uow) 
+        public AutoSubmitAttemptCommandHandler(IUnitOfWork uow) 
         { 
             _uow = uow; 
         }

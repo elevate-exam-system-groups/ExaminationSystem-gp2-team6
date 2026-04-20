@@ -5,6 +5,7 @@ using ExaminationSystem.Domain.Contracts;
 using ExaminationSystem.Infrastructure.DependencyInjection;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ExaminationSystem
@@ -50,7 +51,12 @@ namespace ExaminationSystem
             builder.Services.AddAuthorization();
 
             #region Dependency Injection Services
-            
+
+            builder.Services.AddAutoMapper(config =>
+            {
+                config.AddMaps(typeof(Program).Assembly);
+            });
+
             // InfraStructure
             builder.Services.AddInfraStructureServices(builder.Configuration);
             

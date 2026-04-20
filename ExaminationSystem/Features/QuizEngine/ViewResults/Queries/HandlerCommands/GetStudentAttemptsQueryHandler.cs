@@ -1,5 +1,5 @@
 ﻿using ExaminationSystem.Features.QuizEngine.ViewResults.Dtos;
-using ExaminationSystem.Infrastructure.Persistence.Context;
+using ExaminationSystem.Domain.Contracts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,16 +8,16 @@ namespace ExaminationSystem.Features.QuizEngine.ViewResults.Queries.HandlerComma
     public sealed class GetStudentAttemptsQueryHandler
     : IRequestHandler<GetStudentAttemptsQuery, PagedResult<AttemptSummaryDto>>
     {
-        private readonly AppDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public GetStudentAttemptsQueryHandler(AppDbContext context)
-            => _context = context;
+        public GetStudentAttemptsQueryHandler(IUnitOfWork unitOfWork)
+            => _unitOfWork = unitOfWork;
 
         public async Task<PagedResult<AttemptSummaryDto>> Handle(
             GetStudentAttemptsQuery request,
             CancellationToken cancellationToken)
         {
-            var query = _context.Attempts
+            var query = _unitOfWork.QuizAttempts.GetAll()
                 .AsNoTracking()
                 .Where(a => a.StudentId == request.StudentId)
                 .Include(a => a.Quiz)

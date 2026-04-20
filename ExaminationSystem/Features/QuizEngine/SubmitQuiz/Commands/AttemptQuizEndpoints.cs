@@ -24,7 +24,7 @@ namespace ExaminationSystem.Features.QuizEngine.SubmitQuiz.Commands
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> Submit(int attempt_id, CancellationToken ct)
         {
-            int studentId = GetCurrentUserId();
+            var studentId = GetCurrentUserId();
 
             try
             {
@@ -53,7 +53,7 @@ namespace ExaminationSystem.Features.QuizEngine.SubmitQuiz.Commands
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetResults(int attempt_id, CancellationToken ct)
         {
-            int requesterId = GetCurrentUserId();
+            var requesterId = GetCurrentUserId();
             bool isAdmin = User.IsInRole("Admin");
 
             try
@@ -82,7 +82,7 @@ namespace ExaminationSystem.Features.QuizEngine.SubmitQuiz.Commands
             [FromQuery] int per_page = 10,
             CancellationToken ct = default)
         {
-            int studentId = GetCurrentUserId();
+            var studentId = GetCurrentUserId();
 
             var result = await _mediator.Send(
                 new GetStudentAttemptsQuery(studentId, quiz_id, diploma_id, page, per_page), ct);
@@ -96,7 +96,7 @@ namespace ExaminationSystem.Features.QuizEngine.SubmitQuiz.Commands
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAttemptDetail(int attempt_id, CancellationToken ct)
         {
-            int requesterId = GetCurrentUserId();
+            var requesterId = GetCurrentUserId();
 
             try
             {
@@ -115,12 +115,17 @@ namespace ExaminationSystem.Features.QuizEngine.SubmitQuiz.Commands
             }
         }
 
-        private int GetCurrentUserId()
+        private Guid GetCurrentUserId()
         {
             var claim = User.FindFirstValue(ClaimTypes.NameIdentifier)
                 ?? throw new UnauthorizedAccessException("User identity not found in token.");
 
-            return int.Parse(claim);
+            if (!Guid.TryParse(claim, out var userId))
+            {
+                throw new UnauthorizedAccessException("User identity is invalid.");
+            }
+
+            return userId;
         }
     }
 }

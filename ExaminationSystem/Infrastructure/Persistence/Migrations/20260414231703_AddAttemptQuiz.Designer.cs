@@ -80,8 +80,8 @@ namespace ExaminationSystem.Infrastructure.Persistence.DB.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("SubmittedAt")
                         .HasColumnType("datetime2");

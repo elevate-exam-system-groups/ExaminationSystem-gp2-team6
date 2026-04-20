@@ -4,7 +4,7 @@ using MediatR;
 namespace ExaminationSystem.Features.QuizEngine.ViewResults.Queries
 {
     public sealed record GetStudentAttemptsQuery(
-     int StudentId,
+     Guid StudentId,
      int? QuizId,
      int? DiplomaId,
      int Page = 1,

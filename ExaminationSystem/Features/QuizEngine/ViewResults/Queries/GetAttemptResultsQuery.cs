@@ -5,7 +5,7 @@ namespace ExaminationSystem.Features.QuizEngine.ViewResults.Queries
 {
     public sealed record GetAttemptResultsQuery(
     int AttemptId,
-    int RequesterId,
+    Guid RequesterId,
     bool RequesterIsAdmin
 ) : IRequest<AttemptResultsDto>;
 }

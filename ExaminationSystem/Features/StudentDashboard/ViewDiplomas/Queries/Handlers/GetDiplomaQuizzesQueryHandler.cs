@@ -1,10 +1,10 @@
 using ExaminationSystem.Common.Data;
 using ExaminationSystem.Common.Views;
+using ExaminationSystem.Domain.Contracts;
 using ExaminationSystem.Domain.Entities.Shared.Enums.Diploma;
 using ExaminationSystem.Domain.Entities.Shared.Enums.Quiz;
 using ExaminationSystem.Features.StudentDashboard.ViewDiplomas;
 using ExaminationSystem.Features.StudentDashboard.ViewDiplomas.Queries;
-using ExaminationSystem.Infrastructure.Persistence.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,18 +13,18 @@ namespace ExaminationSystem.Features.StudentDashboard.ViewDiplomas.Queries.Handl
 public sealed class GetDiplomaQuizzesQueryHandler
     : IRequestHandler<GetDiplomaQuizzesQuery, RequestResult<IReadOnlyList<DiplomaQuizItemDto>>>
 {
-    private readonly AppDbContext _db;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public GetDiplomaQuizzesQueryHandler(AppDbContext db)
+    public GetDiplomaQuizzesQueryHandler(IUnitOfWork unitOfWork)
     {
-        _db = db;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<RequestResult<IReadOnlyList<DiplomaQuizItemDto>>> Handle(
         GetDiplomaQuizzesQuery request,
         CancellationToken cancellationToken)
     {
-        var diplomaExistsAndPublished = await _db.Diplomas
+        var diplomaExistsAndPublished = await _unitOfWork.Diplomas.GetAll()
             .AsNoTracking()
             .AnyAsync(
                 d => d.Id == request.DiplomaId && d.Status == DiplomaStatus.Published,
@@ -37,7 +37,7 @@ public sealed class GetDiplomaQuizzesQueryHandler
                 "Diploma not found.");
         }
 
-        var isStudentEnrolled = await _db.StudentDiplomaEnrollments
+        var isStudentEnrolled = await _unitOfWork.StudentDiplomaEnrollments.GetAll()
             .AsNoTracking()
             .AnyAsync(
                 e => e.DiplomaId == request.DiplomaId && e.StudentId == request.StudentId,
@@ -50,7 +50,7 @@ public sealed class GetDiplomaQuizzesQueryHandler
                 "Student is not enrolled in this diploma.");
         }
 
-        var quizzes = await _db.Quizzes
+        var quizzes = await _unitOfWork.Quizzes.GetAll()
             .AsNoTracking()
             .Where(q => q.DiplomaId == request.DiplomaId && q.Status == QuizStatus.Published)
             .OrderBy(q => q.Id)

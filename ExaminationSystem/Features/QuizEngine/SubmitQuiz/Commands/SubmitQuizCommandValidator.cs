@@ -10,7 +10,7 @@ namespace ExaminationSystem.Features.QuizEngine.SubmitQuiz.Commands
                 .GreaterThan(0).WithMessage("AttemptId must be a valid positive integer.");
 
             RuleFor(x => x.StudentId)
-                .GreaterThan(0).WithMessage("StudentId must be a valid positive integer.");
+                .NotEmpty().WithMessage("StudentId is required.");
         }
     }
 }

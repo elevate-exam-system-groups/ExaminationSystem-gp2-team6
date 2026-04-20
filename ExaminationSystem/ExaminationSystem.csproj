@@ -8,9 +8,13 @@
 
   <ItemGroup>
     <Compile Remove="Features\Common\Quiz\Commands\**" />
+    <Compile Remove="Features\StudentDashboard\SelectDiplomaViewQuizzes\**" />
     <Content Remove="Features\Common\Quiz\Commands\**" />
+    <Content Remove="Features\StudentDashboard\SelectDiplomaViewQuizzes\**" />
     <EmbeddedResource Remove="Features\Common\Quiz\Commands\**" />
+    <EmbeddedResource Remove="Features\StudentDashboard\SelectDiplomaViewQuizzes\**" />
     <None Remove="Features\Common\Quiz\Commands\**" />
+    <None Remove="Features\StudentDashboard\SelectDiplomaViewQuizzes\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,10 +34,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Features\StudentDashboard\SelectDiplomaViewQuizzes\" />
   </ItemGroup>
 
 </Project>
