@@ -7,5 +7,6 @@ namespace ExaminationSystem.Domain.Contracts
         Task<ApplicationUser?> GetByIdAsync(Guid id);
         Task<ApplicationUser?> GetByEmailAsync(string email);
         Task<IReadOnlyList<ApplicationUser>> GetStudentsAsync();
+        Task<int> CountAsync();
     }
 }

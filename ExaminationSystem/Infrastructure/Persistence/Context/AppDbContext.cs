@@ -11,26 +11,27 @@ namespace ExaminationSystem.Infrastructure.Persistence.Context;
 
 public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
 {
-    public  AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-    {}
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
-        
+
         // Apply base EF Core configurations.
         base.OnModelCreating(modelBuilder);
     }
-    
+
     public DbSet<Diploma> Diplomas { get; set; }
-    
+
     public DbSet<Question> Questions { get; set; }
-    
+
     public DbSet<AnswerOption> AnswerOptions { get; set; }
-    
+
     public DbSet<Quiz> Quizzes { get; set; }
 
     public DbSet<Domain.Entities.QuizAttempt.QuizAttempt> QuizAttempts { get; set; }
 
     public DbSet<StudentDiplomaEnrollment> StudentDiplomaEnrollments { get; set; }
+    public DbSet<LoginLog> LoginLogs { get; set; }
 }

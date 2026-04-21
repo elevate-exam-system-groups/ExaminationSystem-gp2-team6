@@ -1,10 +1,12 @@
 ﻿using ExaminationSystem.Domain.Contracts;
 using ExaminationSystem.Domain.Entities.AnswerOption;
 using ExaminationSystem.Domain.Entities.AttemptAnswer;
+using ExaminationSystem.Domain.Entities.AttemptResult;
 using ExaminationSystem.Domain.Entities.Diploma;
 using ExaminationSystem.Domain.Entities.Question;
 using ExaminationSystem.Domain.Entities.Quiz;
 using ExaminationSystem.Domain.Entities.QuizAttempt;
+using ExaminationSystem.Domain.Entities.User;
 using ExaminationSystem.Infrastructure.Persistence.Context;
 using Hotel.Persistence.Repositories;
 
@@ -27,6 +29,8 @@ namespace ExaminationSystem.Infrastructure.Persistence.Repositories
         private IGenericRepository<Diploma, int>? _diplomas;
         private IGenericRepository<StudentDiplomaEnrollment, int>? _enrollments;
         private IGenericRepository<AttemptAnswer, int>? _attemptAnswers;
+        private IGenericRepository<LoginLog, int>? _loginLogs;
+        private IGenericRepository<AttemptResult, int>? _attemptResults;
 
         // Repositories (lazy init)
         public IGenericRepository<Quiz, int> Quizzes
@@ -49,6 +53,13 @@ namespace ExaminationSystem.Infrastructure.Persistence.Repositories
 
         public IGenericRepository<AttemptAnswer, int> AttemptAnswers
             => _attemptAnswers ??= new GenericRepository<AttemptAnswer, int>(_context);
+
+        public IGenericRepository<LoginLog, int> LoginLogs
+             => _loginLogs ??= new GenericRepository<LoginLog, int>(_context);
+
+        public IGenericRepository<AttemptResult, int> AttemptResults
+            => _attemptResults ??= new GenericRepository<AttemptResult, int>(_context);
+
 
         // Save changes
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

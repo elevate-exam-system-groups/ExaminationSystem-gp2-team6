@@ -15,23 +15,23 @@ namespace ExaminationSystem.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<ApplicationUser?> GetByIdAsync(Guid id)
-        {
-            return await _context.Users
+        public async Task<ApplicationUser?> GetByIdAsync(Guid id) =>
+             await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == id);
-        }
 
-        public async Task<ApplicationUser?> GetByEmailAsync(string email)
-        {
-            return await _context.Users
+
+        public async Task<ApplicationUser?> GetByEmailAsync(string email) =>
+             await _context.Users
                 .FirstOrDefaultAsync(u => u.Email == email);
-        }
 
-        public async Task<IReadOnlyList<ApplicationUser>> GetStudentsAsync()
-        {
-            return await _context.Users
+
+        public async Task<IReadOnlyList<ApplicationUser>> GetStudentsAsync() =>
+             await _context.Users
                 .Where(u => u.UserType == UserType.Student)
                 .ToListAsync();
-        }
+
+
+        public async Task<int> CountAsync()
+             => await _context.Users.CountAsync();
     }
 }
