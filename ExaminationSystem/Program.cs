@@ -1,12 +1,11 @@
-using System.Security.Claims;
-using System.Text;
 using ExaminationSystem.Common.Behaviors;
+using ExaminationSystem.Common.Exceptions;
 using ExaminationSystem.Domain.Contracts;
 using ExaminationSystem.Infrastructure.DependencyInjection;
-using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Text;
 
 namespace ExaminationSystem
 {
@@ -59,9 +58,9 @@ namespace ExaminationSystem
 
             // InfraStructure
             builder.Services.AddInfraStructureServices(builder.Configuration);
-            
+
             #endregion
-            
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -70,19 +69,19 @@ namespace ExaminationSystem
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
-            
+
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 var seeder = services.GetRequiredService<IDataSeeding>();
-    
+
                 await seeder.DataSeedAsync();
                 await seeder.IdentityDataSeedAsync();
             }

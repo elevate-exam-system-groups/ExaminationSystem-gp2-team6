@@ -6,7 +6,6 @@ using ExaminationSystem.Infrastructure.Persistence.Seed;
 using Hotel.Persistence.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using System.Diagnostics;
 
 namespace ExaminationSystem.Infrastructure.DependencyInjection;
@@ -23,19 +22,24 @@ public static class InfraStructureServicesExtensions
             options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking); // Default tracking behavior set to NoTracking
 
         });
-        
+        //Caching
+        services.AddMemoryCache();
+
         // Identity
         services.AddDataProtection();
         services.AddIdentityCore<ApplicationUser>()
             .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
-        
+
         // Data Seeding
         services.AddScoped<IDataSeeding, DataSeeding>();
+        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
-        
+
+
+
         return services;
     }
 }

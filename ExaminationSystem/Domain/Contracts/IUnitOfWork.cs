@@ -1,9 +1,11 @@
 ﻿using ExaminationSystem.Domain.Entities.AnswerOption;
 using ExaminationSystem.Domain.Entities.AttemptAnswer;
+using ExaminationSystem.Domain.Entities.AttemptResult;
 using ExaminationSystem.Domain.Entities.Diploma;
 using ExaminationSystem.Domain.Entities.Question;
 using ExaminationSystem.Domain.Entities.Quiz;
 using ExaminationSystem.Domain.Entities.QuizAttempt;
+using ExaminationSystem.Domain.Entities.User;
 
 namespace ExaminationSystem.Domain.Contracts
 {
@@ -16,6 +18,8 @@ namespace ExaminationSystem.Domain.Contracts
         IGenericRepository<Diploma, int> Diplomas { get; }
         IGenericRepository<StudentDiplomaEnrollment, int> StudentDiplomaEnrollments { get; }
         IGenericRepository<AttemptAnswer, int> AttemptAnswers { get; }
+        IGenericRepository<LoginLog, int> LoginLogs { get; }
+        IGenericRepository<AttemptResult, int> AttemptResults { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }
