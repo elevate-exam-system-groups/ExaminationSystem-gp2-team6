@@ -1,11 +1,11 @@
-using ExaminationSystem.Features.AdminManagement.CreateQuiz.ViewModel;
+using ExaminationSystem.Features.AdminManagement.UpdateQuiz.ViewModel;
 using FluentValidation;
 
-namespace ExaminationSystem.Features.AdminManagement.CreateQuiz.Validation
+namespace ExaminationSystem.Features.AdminManagement.UpdateQuiz.Validation
 {
-    public class CreateQuizRequestViewModelValidator : AbstractValidator<CreateQuizRequestViewModel>
+    public class UpdateQuizRequestViewModelValidator : AbstractValidator<UpdateQuizRequestViewModel>
     {
-        public CreateQuizRequestViewModelValidator()
+        public UpdateQuizRequestViewModelValidator()
         {
                 RuleFor(x => x.Title)
                     .NotEmpty().WithMessage("Title is required.")
