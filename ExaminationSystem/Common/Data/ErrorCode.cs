@@ -13,6 +13,7 @@
         Forbidden = 8,
         Conflict = 9,
         Gone = 10,
-        ValidationError = 11
+        ValidationError = 11,
+        Unknown = 12
     }
 }
