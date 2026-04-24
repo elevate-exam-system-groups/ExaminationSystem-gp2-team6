@@ -1,4 +1,5 @@
-﻿using ExaminationSystem.Features.QuizEngine.ViewResults.Dtos;
+using ExaminationSystem.Features.QuizEngine.ViewResults.Dtos;
+using ExaminationSystem.Common.Pagination;
 using MediatR;
 
 namespace ExaminationSystem.Features.QuizEngine.ViewResults.Queries
@@ -8,6 +9,6 @@ namespace ExaminationSystem.Features.QuizEngine.ViewResults.Queries
      int? QuizId,
      int? DiplomaId,
      int Page = 1,
-     int PerPage = 10
- ) : IRequest<PagedResult<AttemptSummaryDto>>;
+     int PageSize = 10
+ ) : IRequest<PaginatedResult<AttemptSummaryDto>>;
 }

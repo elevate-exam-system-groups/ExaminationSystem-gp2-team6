@@ -2,21 +2,6 @@ using System.Text.Json.Serialization;
 
 namespace ExaminationSystem.Features.StudentDashboard.ViewDiplomas;
 
-public sealed class GetPublishedDiplomasResponseDto
-{
-    [JsonPropertyName("page")]
-    public int Page { get; init; }
-
-    [JsonPropertyName("per_page")]
-    public int PerPage { get; init; }
-
-    [JsonPropertyName("total")]
-    public int Total { get; init; }
-
-    [JsonPropertyName("items")]
-    public IReadOnlyList<PublishedDiplomaItemDto> Items { get; init; } = Array.Empty<PublishedDiplomaItemDto>();
-}
-
 public sealed class PublishedDiplomaItemDto
 {
     [JsonPropertyName("id")]

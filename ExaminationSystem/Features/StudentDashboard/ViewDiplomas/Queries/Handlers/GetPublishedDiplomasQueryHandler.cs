@@ -1,4 +1,5 @@
 using ExaminationSystem.Common.Views;
+using ExaminationSystem.Common.Pagination;
 using ExaminationSystem.Domain.Contracts;
 using ExaminationSystem.Domain.Entities.Shared.Enums.Diploma;
 using ExaminationSystem.Features.StudentDashboard.ViewDiplomas;
@@ -9,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ExaminationSystem.Features.StudentDashboard.ViewDiplomas.Queries.Handlers;
 
 public sealed class GetPublishedDiplomasQueryHandler
-    : IRequestHandler<GetPublishedDiplomasQuery, RequestResult<GetPublishedDiplomasResponseDto>>
+    : IRequestHandler<GetPublishedDiplomasQuery, RequestResult<PaginatedResult<PublishedDiplomaItemDto>>>
 {
     private const int MaxPageSize = 100;
     private readonly IUnitOfWork _unitOfWork;
@@ -19,23 +20,16 @@ public sealed class GetPublishedDiplomasQueryHandler
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<RequestResult<GetPublishedDiplomasResponseDto>> Handle(
+    public async Task<RequestResult<ExaminationSystem.Common.Pagination.PaginatedResult<PublishedDiplomaItemDto>>> Handle(
         GetPublishedDiplomasQuery request,
         CancellationToken cancellationToken)
     {
-        var page = request.PageNumber < 1 ? 1 : request.PageNumber;
-        var perPage = request.PageSize < 1 ? 10 : Math.Min(request.PageSize, MaxPageSize);
-
         var baseQuery = _unitOfWork.Diplomas.GetAll()
             .AsNoTracking()
             .Where(d => d.Status == DiplomaStatus.Published);
 
-        var total = await baseQuery.CountAsync(cancellationToken);
-
-        var items = await baseQuery
+        var result = await baseQuery
             .OrderBy(d => d.Id)
-            .Skip((page - 1) * perPage)
-            .Take(perPage)
             .Select(d => new PublishedDiplomaItemDto
             {
                 Id = d.Id,
@@ -51,16 +45,8 @@ public sealed class GetPublishedDiplomasQueryHandler
                         d.Quizzes.Count,
                         2)
             })
-            .ToListAsync(cancellationToken);
+            .ToPaginatedListAsync(request.Page, request.PageSize, cancellationToken);
 
-        var response = new GetPublishedDiplomasResponseDto
-        {
-            Page = page,
-            PerPage = perPage,
-            Total = total,
-            Items = items
-        };
-
-        return RequestResult<GetPublishedDiplomasResponseDto>.Success(response);
+        return RequestResult<PaginatedResult<PublishedDiplomaItemDto>>.Success(result);
     }
 }

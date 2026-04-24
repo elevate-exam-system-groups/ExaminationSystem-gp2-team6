@@ -1,4 +1,4 @@
-﻿using ExaminationSystem.Common.Exceptions;
+using ExaminationSystem.Common.Exceptions;
 using ExaminationSystem.Features.QuizEngine.ViewResults;
 using ExaminationSystem.Features.QuizEngine.ViewResults.Dtos;
 using ExaminationSystem.Features.QuizEngine.ViewResults.Queries;
@@ -74,18 +74,18 @@ namespace ExaminationSystem.Features.QuizEngine.SubmitQuiz.Commands
         }
 
         [HttpGet("student/attempts")]
-        [ProducesResponseType(typeof(PagedResult<AttemptSummaryDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ExaminationSystem.Common.Pagination.PaginatedResult<AttemptSummaryDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetHistory(
             [FromQuery] int? quiz_id,
             [FromQuery] int? diploma_id,
             [FromQuery] int page = 1,
-            [FromQuery] int per_page = 10,
+            [FromQuery] int pageSize = 10,
             CancellationToken ct = default)
         {
             var studentId = GetCurrentUserId();
 
             var result = await _mediator.Send(
-                new GetStudentAttemptsQuery(studentId, quiz_id, diploma_id, page, per_page), ct);
+                new GetStudentAttemptsQuery(studentId, quiz_id, diploma_id, page, pageSize), ct);
 
             return Ok(result);
         }
