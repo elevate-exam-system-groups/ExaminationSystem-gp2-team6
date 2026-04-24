@@ -8,7 +8,7 @@ using MediatR;
 
 namespace ExaminationSystem.Features.AdminManagement.CreateQuiz.Orchestrator.HandlerOrchestrator
 {
-    public class CreateQuizOrchestratorHandler : IRequestHandler<CreateQuizOrchestrator, RequestResult<CreateQuizCommand>>
+    public class CreateQuizOrchestratorHandler : IRequestHandler<CreateQuizOrchestrator, RequestResult<bool>>
     {
         private readonly IMediator _mediator;
 
