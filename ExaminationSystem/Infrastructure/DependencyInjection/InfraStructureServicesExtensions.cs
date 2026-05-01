@@ -1,0 +1,45 @@
+using ExaminationSystem.Domain.Contracts;
+using ExaminationSystem.Domain.Entities.User;
+using ExaminationSystem.Infrastructure.Persistence.Context;
+using ExaminationSystem.Infrastructure.Persistence.Repositories;
+using ExaminationSystem.Infrastructure.Persistence.Seed;
+using Hotel.Persistence.Repositories;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+
+namespace ExaminationSystem.Infrastructure.DependencyInjection;
+
+public static class InfraStructureServicesExtensions
+{
+    public static IServiceCollection AddInfraStructureServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        // Database
+        services.AddDbContext<AppDbContext>(options =>
+        {
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+            options.LogTo(log => Debug.WriteLine(log), LogLevel.Information).EnableSensitiveDataLogging(true);// Enable sensitive data logging for debugging purposes
+            options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking); // Default tracking behavior set to NoTracking
+
+        });
+        //Caching
+        services.AddMemoryCache();
+
+        // Identity
+        services.AddDataProtection();
+        services.AddIdentityCore<ApplicationUser>()
+            .AddRoles<IdentityRole<Guid>>()
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
+
+        // Data Seeding
+        services.AddScoped<IDataSeeding, DataSeeding>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
+
+
+
+        return services;
+    }
+}

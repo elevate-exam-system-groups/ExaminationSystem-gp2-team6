@@ -22,7 +22,7 @@ public class Question : BaseEntity<int>
 
     #region QuestionOption
     
-    public ICollection<AnswerOption.AnswerOption> AnswerOptions { get; set; } = new List<AnswerOption.AnswerOption>();
+    public ICollection<AnswerOption.AnswerOption> AnswerOptions { get; set; } = new HashSet<AnswerOption.AnswerOption>();
     
     #endregion
 

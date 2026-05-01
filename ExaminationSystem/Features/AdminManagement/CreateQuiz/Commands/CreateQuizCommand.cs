@@ -1,9 +1,8 @@
-﻿
 using ExaminationSystem.Common.Views;
-using ExaminationSystem.Domain.Entities.Shared.Enums.Quiz;
+using ExaminationSystem.Domain.Entities.Quiz;
 using MediatR;
 
 namespace ExaminationSystem.Features.AdminManagement.CreateQuiz.Commands
 {
-    public record CreateQuizCommand(string Title, TimeSpan Duration, int PassScore, int? MaxAttempts, QuizStatus Status, string? Instructions) : IRequest<RequestResult<bool>>;
+    public record CreateQuizCommand(string Title, int DiplomaId, int DurationMinutes, int PassScore, int? MaxAttempts, string? Instructions) : IRequest<RequestResult<bool>>;
 }
