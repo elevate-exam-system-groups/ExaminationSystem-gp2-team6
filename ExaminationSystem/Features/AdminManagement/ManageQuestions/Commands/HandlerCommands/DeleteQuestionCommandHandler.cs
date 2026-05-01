@@ -4,6 +4,7 @@ using ExaminationSystem.Domain.Contracts;
 using ExaminationSystem.Domain.Entities.Shared.Enums.Quiz;
 using ExaminationSystem.Features.AdminManagement.ManageQuestions.Commands;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExaminationSystem.Features.AdminManagement.ManageQuestions.Commands.HandlerCommands
 {
@@ -18,19 +19,21 @@ namespace ExaminationSystem.Features.AdminManagement.ManageQuestions.Commands.Ha
 
         public async Task<RequestResult<bool>> Handle(DeleteQuestionCommand request, CancellationToken cancellationToken)
         {
-            var question = await _uow.Questions.GetByIdAsync(request.QuestionId, q => q.Quiz);
+            // Single read-only query: existence + quiz status via Select (no Include)
+            var info = await _uow.Questions.GetAll()
+                .Where(q => q.Id == request.QuestionId && !q.IsDeleted)
+                .Select(q => new { QuizStatus = q.Quiz.Status })
+                .FirstOrDefaultAsync(cancellationToken);
 
-            if (question == null)
-            {
+            if (info == null)
                 return RequestResult<bool>.Failure(ErrorCode.NotFound, "Question not found.");
-            }
 
-            if (question.Quiz.Status == QuizStatus.Published)
-            {
+            if (info.QuizStatus == QuizStatus.Published)
                 return RequestResult<bool>.Failure(ErrorCode.Conflict, "Unpublish quiz first or soft-delete question.");
-            }
 
-            _uow.Questions.SoftDelete(question);
+            // Fetch tracked entity for the mutation
+            var question = await _uow.Questions.GetByIdAsync(request.QuestionId);
+            _uow.Questions.SoftDelete(question!);
 
             return await _uow.SaveChangesAsync(cancellationToken) > 0
                 ? RequestResult<bool>.Success(true, "Question deleted successfully.")

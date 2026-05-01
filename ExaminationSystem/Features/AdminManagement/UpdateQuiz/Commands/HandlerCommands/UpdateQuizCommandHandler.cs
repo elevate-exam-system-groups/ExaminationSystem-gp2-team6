@@ -1,44 +1,49 @@
-using AutoMapper;
 using ExaminationSystem.Common.Data;
 using ExaminationSystem.Common.Views;
 using ExaminationSystem.Domain.Contracts;
-using ExaminationSystem.Domain.Entities.Quiz;
-using ExaminationSystem.Features.Common.Quiz.Queries;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExaminationSystem.Features.AdminManagement.UpdateQuiz.Commands.HandlerCommands
 {
     public class UpdateQuizCommandHandler : IRequestHandler<UpdateQuizCommand, RequestResult<bool>>
     {
         private readonly IUnitOfWork _uow;
-        private readonly IMapper _mapper;
-        private readonly IMediator _mediator;       
 
-        public UpdateQuizCommandHandler(IUnitOfWork uow, IMapper mapper, IMediator mediator)
+        public UpdateQuizCommandHandler(IUnitOfWork uow)
         {
             _uow = uow;
-            _mapper = mapper;
-            _mediator = mediator;
         }
 
         public async Task<RequestResult<bool>> Handle(UpdateQuizCommand request, CancellationToken cancellationToken)
         {
-            // Get Quiz
-            var quizResult = await _mediator.Send(new GetQuizByIdQuery(request.Id), cancellationToken);
-            if (!quizResult.IsSuccess)
-                return RequestResult<bool>.Failure(quizResult.ErrorCode, quizResult.Message);
+            var quiz = await _uow.Quizzes.GetAll(withNoTracking: false)
+                .FirstOrDefaultAsync(q => q.Id == request.Id && !q.IsDeleted, cancellationToken);
 
-            if (quizResult.Data.Title != request.Title&& !string.IsNullOrEmpty(request.Title))
+            if (quiz == null)
+                return RequestResult<bool>.Failure(ErrorCode.NotFound, "Quiz not found.");
+
+            if (!string.IsNullOrEmpty(request.Title) && quiz.Title != request.Title)
             {
-                var titleExists = await _mediator.Send(new IsQuizTitleExistQuery(request.Title), cancellationToken);
-                if (titleExists.IsSuccess)
-                {
-                    return RequestResult<bool>.Failure(titleExists.ErrorCode, titleExists.Message);
-                }
-            }
-            var quiz = _mapper.Map<Quiz>(request);
+                var titleTaken = await _uow.Quizzes.GetAll()
+                    .AnyAsync(q => q.Title == request.Title && q.Id != request.Id, cancellationToken);
 
-            _uow.Quizzes.Update(quiz);
+                if (titleTaken)
+                    return RequestResult<bool>.Failure(ErrorCode.AlreadyExists, "A quiz with this title already exists.");
+            }
+
+            if (!string.IsNullOrEmpty(request.Title))
+                quiz.Title = request.Title;
+            if (request.DiplomaId > 0)
+                quiz.DiplomaId = request.DiplomaId;
+            if (request.DurationMinutes.HasValue)
+                quiz.Duration = TimeSpan.FromMinutes(request.DurationMinutes.Value);
+            if (request.PassScore.HasValue)
+                quiz.PassScore = request.PassScore.Value;
+            if (request.MaxAttempts.HasValue)
+                quiz.MaxAttempts = request.MaxAttempts.Value;
+            if (request.Instructions != null)
+                quiz.Instructions = request.Instructions;
 
             return await _uow.SaveChangesAsync(cancellationToken) > 0
                 ? RequestResult<bool>.Success(true, "Quiz updated successfully.")

@@ -19,10 +19,7 @@ namespace ExaminationSystem.Features.QuizEngine.ViewResults.Queries.HandlerComma
             CancellationToken cancellationToken)
         {
             var query = _unitOfWork.QuizAttempts.GetAll()
-                .AsNoTracking()
                 .Where(a => a.StudentId == request.StudentId)
-                .Include(a => a.Quiz)
-                    .ThenInclude(q => q.Diploma)
                 .AsQueryable();
 
             if (request.QuizId.HasValue)
