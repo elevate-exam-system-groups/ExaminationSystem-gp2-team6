@@ -179,6 +179,42 @@ namespace ExaminationSystem.Infrastructure.Persistence.DB.Migrations
                     b.ToTable("StudentDiplomaEnrollments", (string)null);
                 });
 
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.PasswordResetTemporaryToken.PasswordResetTemporaryToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PasswordResetTemporaryTokens");
+                });
+
             modelBuilder.Entity("ExaminationSystem.Domain.Entities.Question.Question", b =>
                 {
                     b.Property<int>("Id")
@@ -421,6 +457,75 @@ namespace ExaminationSystem.Infrastructure.Persistence.DB.Migrations
                     b.ToTable("LoginLogs");
                 });
 
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.User.UserOtp.UserOtp", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "IsUsed", "ExpiresAt", "Code");
+
+                    b.ToTable("UserOtps", (string)null);
+                });
+
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.User.UserRefreshToken.UserRefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRefreshTokens");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
                     b.Property<Guid>("Id")
@@ -626,6 +731,17 @@ namespace ExaminationSystem.Infrastructure.Persistence.DB.Migrations
                     b.Navigation("Student");
                 });
 
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.PasswordResetTemporaryToken.PasswordResetTemporaryToken", b =>
+                {
+                    b.HasOne("ExaminationSystem.Domain.Entities.User.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ExaminationSystem.Domain.Entities.Question.Question", b =>
                 {
                     b.HasOne("ExaminationSystem.Domain.Entities.Quiz.Quiz", "Quiz")
@@ -671,6 +787,28 @@ namespace ExaminationSystem.Infrastructure.Persistence.DB.Migrations
                 {
                     b.HasOne("ExaminationSystem.Domain.Entities.User.ApplicationUser", "User")
                         .WithMany("LoginLogs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.User.UserOtp.UserOtp", b =>
+                {
+                    b.HasOne("ExaminationSystem.Domain.Entities.User.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.User.UserRefreshToken.UserRefreshToken", b =>
+                {
+                    b.HasOne("ExaminationSystem.Domain.Entities.User.ApplicationUser", "User")
+                        .WithMany("RefreshTokens")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -760,6 +898,8 @@ namespace ExaminationSystem.Infrastructure.Persistence.DB.Migrations
                     b.Navigation("LoginLogs");
 
                     b.Navigation("QuizAttempts");
+
+                    b.Navigation("RefreshTokens");
 
                     b.Navigation("StudentDiplomaEnrollments");
                 });
