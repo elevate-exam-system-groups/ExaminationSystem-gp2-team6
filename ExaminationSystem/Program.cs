@@ -10,23 +10,22 @@ namespace ExaminationSystem
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // 1. Add Core Services
+            // Core Services
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
             {
-                // Your custom Swagger schema configuration
                 options.CustomSchemaIds(type => type.FullName);
             });
 
-            // 2. Add Layer Specific Services (Dependency Injection)
+            // Dependency Injection
             builder.Services.AddApplicationServices();
             builder.Services.AddInfraStructureServices(builder.Configuration);
             builder.Services.AddIdentityAndAuthServices(builder.Configuration);
 
             var app = builder.Build();
 
-            // 3. Configure the HTTP request pipeline
+            // HTTP request pipeline
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -37,13 +36,13 @@ namespace ExaminationSystem
             app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseHttpsRedirection();
 
-            // Auth Pipeline (Authentication MUST be before Authorization)
+            // Auth Pipeline
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
 
-            // 4. Data Seeding
+            // Data Seeding
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
