@@ -1,3 +1,4 @@
+using ExaminationSystem.Contracts.Seed;
 using ExaminationSystem.Domain.Contracts;
 using ExaminationSystem.Domain.Entities.Diploma;
 using ExaminationSystem.Domain.Entities.Quiz;
@@ -19,14 +20,14 @@ public class DataSeeding : IDataSeeding
     private readonly AppDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole<Guid>> _roleManager;
-    
+
     public DataSeeding(AppDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<Guid>> roleManager)
     {
         _context = context;
         _userManager = userManager;
         _roleManager = roleManager;
     }
-    
+
     public async Task DataSeedAsync()
     {
         try

@@ -22,4 +22,6 @@ public class ApplicationUser : IdentityUser<Guid>
 
     public ICollection<Domain.Entities.QuizAttempt.QuizAttempt> QuizAttempts { get; set; } = new HashSet<Domain.Entities.QuizAttempt.QuizAttempt>();
     public ICollection<LoginLog> LoginLogs { get; set; } = new HashSet<LoginLog>();
+    public ICollection<UserRefreshToken.UserRefreshToken> RefreshTokens { get; set; } = new List <UserRefreshToken.UserRefreshToken>();
+
 }

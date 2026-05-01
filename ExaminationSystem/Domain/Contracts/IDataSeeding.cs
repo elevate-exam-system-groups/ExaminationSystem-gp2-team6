@@ -1,4 +1,4 @@
-namespace ExaminationSystem.Domain.Contracts;
+namespace ExaminationSystem.Contracts.Seed;
 
 public interface IDataSeeding
 {

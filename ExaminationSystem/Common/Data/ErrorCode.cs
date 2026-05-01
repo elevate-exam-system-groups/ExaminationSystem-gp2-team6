@@ -14,6 +14,15 @@
         Conflict = 9,
         Gone = 10,
         ValidationError = 11,
-        Unknown = 12
+        Unknown = 12,
+        UserNotFound = 13,
+        UserAlreadyExists = 14,
+        InvalidCredentials = 15, // IncorrectPassword
+        TooManyRequests = 16,
+        UserLocked = 17,
+        VerificationCodeExpired = 18,
+        VerificationCodeInvalid = 19,
+        PasswordNotMatch = 20,
+        ExpiredTemporaryToken = 21
     }
 }
