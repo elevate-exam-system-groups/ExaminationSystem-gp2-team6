@@ -1,37 +1,39 @@
-﻿using AutoMapper;
 using ExaminationSystem.Common.Data;
-using ExaminationSystem.Common.Views;
 using ExaminationSystem.Features.AdminManagement.UpdateQuiz.Orchestrator;
 using ExaminationSystem.Features.AdminManagement.UpdateQuiz.ViewModel;
-using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExaminationSystem.Features.AdminManagement.UpdateQuiz
 {
     [ApiController]
     [Route("api/admin/quizzes")]
+    [Authorize(Roles = "Admin")]
     public class UpdateQuizEndPoint : ControllerBase
     {
-        private readonly IValidator<UpdateQuizRequestViewModel> _validator;
-
-        public UpdateQuizEndPoint(IValidator<UpdateQuizRequestViewModel> validator, IMapper mapper)
-        {
-            _validator = validator;
-        }
         [HttpPut("{id}")]
-        public async Task<EndpointResponse<bool>> UpdateQuiz([FromRoute] int id, [FromBody] UpdateQuizRequestViewModel request, [FromServices] IMediator mediator)
+        public async Task<IActionResult> UpdateQuiz(
+            [FromRoute] int id,
+            [FromBody] UpdateQuizRequestViewModel request,
+            [FromServices] IMediator mediator,
+            CancellationToken cancellationToken)
         {
-            var validationResult = await _validator.ValidateAsync(request);
-            if (!validationResult.IsValid)
-                return EndpointResponse<bool>.Failure(ErrorCode.InvalidData, string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage)));
+            var result = await mediator.Send(
+                new UpdateQuizOrchestrator(
+                    id, request.Title, request.DiplomaId, request.DurationMinutes,
+                    request.PassScore, request.MaxAttempts, request.Instructions),
+                cancellationToken);
 
-            var quizUpdated = await mediator.Send(new UpdateQuizOrchestrator(id, request.Title, request.DiplomaId, request.DurationMinutes, request.PassScore, request.MaxAttempts, request.Instructions));
+            if (!result.IsSuccess)
+                return result.ErrorCode switch
+                {
+                    ErrorCode.NotFound => NotFound(new { result.Message }),
+                    ErrorCode.AlreadyExists => Conflict(new { result.Message }),
+                    _ => BadRequest(new { result.Message })
+                };
 
-            return (!quizUpdated.IsSuccess)
-                ? EndpointResponse<bool>.Failure(quizUpdated.ErrorCode, quizUpdated.Message)
-                : EndpointResponse<bool>.Success(quizUpdated.Data, quizUpdated.Message);
-
+            return Ok(new { result.Message });
         }
     }
 }

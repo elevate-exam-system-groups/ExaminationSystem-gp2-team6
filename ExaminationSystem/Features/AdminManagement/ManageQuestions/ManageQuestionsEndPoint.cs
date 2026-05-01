@@ -75,7 +75,7 @@ namespace ExaminationSystem.Features.AdminManagement.ManageQuestions
                 };
             }
 
-            return Ok(result);
+            return NoContent();
         }
     }
 

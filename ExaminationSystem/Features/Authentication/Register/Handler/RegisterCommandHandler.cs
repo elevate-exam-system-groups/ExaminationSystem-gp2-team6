@@ -32,8 +32,6 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RequestRe
     
     public async Task<RequestResult<RegisterDto>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        if (request.Password != request.ConfirmedPassword) return RequestResult<RegisterDto>.Failure(ErrorCode.PasswordNotMatch, "Passwords do not match");
-
         var userIsExists = await _userManager.FindByNameAsync(request.Email);
 
         if (userIsExists != null) return RequestResult<RegisterDto>.Failure(ErrorCode.UserAlreadyExists, "User already exists");

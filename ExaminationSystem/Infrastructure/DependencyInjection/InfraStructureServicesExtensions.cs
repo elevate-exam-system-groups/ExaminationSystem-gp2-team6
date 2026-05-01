@@ -17,8 +17,7 @@ public static class InfrastructureServicesExtensions
         {
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             options.LogTo(log => Debug.WriteLine(log), LogLevel.Information)
-                   .EnableSensitiveDataLogging(true); // Enable sensitive data logging for debugging purposes
-            options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking); // Default tracking behavior
+                   .EnableSensitiveDataLogging(true);
         });
 
         // Caching

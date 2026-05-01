@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using FluentValidation;
+using System.Text.Json;
 
 namespace ExaminationSystem.Common.Exceptions
 {
@@ -9,6 +10,16 @@ namespace ExaminationSystem.Common.Exceptions
             try
             {
                 await next(context);
+            }
+            catch (ValidationException ex)
+            {
+                logger.LogWarning(ex, "Validation failed");
+                context.Response.StatusCode = 400;
+                await WriteJson(context, new
+                {
+                    message = "Validation failed.",
+                    errors = ex.Errors.Select(e => new { field = e.PropertyName, error = e.ErrorMessage })
+                });
             }
             catch (NotFoundException ex)
             {

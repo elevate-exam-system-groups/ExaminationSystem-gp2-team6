@@ -20,39 +20,41 @@ namespace ExaminationSystem.Features.QuizEngine.ViewResults.Queries.HandlerComma
             GetAttemptResultsQuery request,
             CancellationToken cancellationToken)
         {
-            var attempt = await _unitOfWork.QuizAttempts.GetAll()
-                .AsNoTracking()
-                .Include(a => a.AttemptResults)
-                    .ThenInclude(r => r.Question)
-                .FirstOrDefaultAsync(a => a.Id == request.AttemptId, cancellationToken)
+            var projected = await _unitOfWork.QuizAttempts.GetAll()
+                .Where(a => a.Id == request.AttemptId)
+                .Select(a => new
+                {
+                    a.StudentId,
+                    a.Status,
+                    a.Score,
+                    a.Passed,
+                    TotalQuestions = a.AttemptResults.Count(),
+                    CorrectCount = a.AttemptResults.Count(r => r.IsCorrect),
+                    PerQuestion = a.AttemptResults.Select(r => new QuestionResultDto(
+                        r.QuestionId,
+                        r.Question.QuestionText,
+                        r.StudentAnswerOptionId,
+                        r.CorrectAnswerOptionId,
+                        r.IsCorrect,
+                        r.Question.Explanation
+                    )).ToList()
+                })
+                .FirstOrDefaultAsync(cancellationToken)
                 ?? throw new NotFoundException(nameof(QuizAttempt), request.AttemptId);
 
-            bool isOwner = attempt.StudentId == request.RequesterId;
-
-            if (!isOwner && !request.RequesterIsAdmin)
+            if (projected.StudentId != request.RequesterId && !request.RequesterIsAdmin)
                 throw new ForbiddenAccessException();
 
-            if (attempt.Status == AttemptStatus.InProgress)
+            if (projected.Status == AttemptStatus.InProgress)
                 throw new ForbiddenAccessException(
                     "Results are not available while the attempt is still in progress.");
 
-            var results = attempt.AttemptResults;
-
-            var perQuestion = results.Select(r => new QuestionResultDto(
-                QuestionId: r.QuestionId,
-                QuestionText: r.Question.QuestionText,
-                StudentAnswerOptionId: r.StudentAnswerOptionId,
-                CorrectAnswerOptionId: r.CorrectAnswerOptionId,
-                IsCorrect: r.IsCorrect,
-                Explanation: r.Question.Explanation
-            )).ToList();
-
             return new AttemptResultsDto(
-                Score: attempt.Score!.Value,
-                Passed: attempt.Passed!.Value,
-                TotalQuestions: results.Count,
-                CorrectCount: results.Count(r => r.IsCorrect),
-                PerQuestion: perQuestion
+                Score: projected.Score!.Value,
+                Passed: projected.Passed!.Value,
+                TotalQuestions: projected.TotalQuestions,
+                CorrectCount: projected.CorrectCount,
+                PerQuestion: projected.PerQuestion
             );
         }
     }
