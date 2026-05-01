@@ -19,6 +19,6 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Domain.Entities.Qu
             .HasForeignKey(a => a.QuestionId)
             .OnDelete(DeleteBehavior.Restrict);
         
-        builder.HasQueryFilter(q => !q.IsDeleted);
+        // builder.HasQueryFilter(q => !q.IsDeleted);
     }
 }

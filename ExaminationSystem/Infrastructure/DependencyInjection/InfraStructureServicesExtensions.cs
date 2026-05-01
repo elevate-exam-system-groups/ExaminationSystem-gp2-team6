@@ -1,12 +1,12 @@
-﻿using ExaminationSystem.Contracts.Seed;
+﻿using System.Diagnostics;
+using ExaminationSystem.Contracts.Seed;
 using ExaminationSystem.Domain.Contracts;
 using ExaminationSystem.Infrastructure.Persistence.Context;
 using ExaminationSystem.Infrastructure.Persistence.Repositories;
 using ExaminationSystem.Infrastructure.Persistence.Seed;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 
-namespace ExaminationSystem.Extensions.Infrastructure;
+namespace ExaminationSystem.Infrastructure.DependencyInjection;
 
 public static class InfrastructureServicesExtensions
 {
@@ -17,8 +17,7 @@ public static class InfrastructureServicesExtensions
         {
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             options.LogTo(log => Debug.WriteLine(log), LogLevel.Information)
-                   .EnableSensitiveDataLogging(true); // Enable sensitive data logging for debugging purposes
-            options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking); // Default tracking behavior
+                   .EnableSensitiveDataLogging(false);
         });
 
         // Caching

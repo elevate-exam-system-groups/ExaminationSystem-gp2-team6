@@ -26,6 +26,6 @@ public class QuizAttemptConfiguration : IEntityTypeConfiguration<QuizAttempt>
         builder.HasIndex(a => a.StudentId);
         builder.HasIndex(a => a.QuizId);
 
-        builder.HasQueryFilter(a => !a.IsDeleted && !a.Quiz.IsDeleted);
+        // builder.HasQueryFilter(a => !a.IsDeleted && !a.Quiz.IsDeleted);
     }
 }

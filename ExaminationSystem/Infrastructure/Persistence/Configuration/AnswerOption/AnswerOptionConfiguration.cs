@@ -11,6 +11,6 @@ public class AnswerOptionConfiguration : IEntityTypeConfiguration<Domain.Entitie
         builder.Property(a => a.Text).HasMaxLength(1000).IsRequired();
         builder.Property(a => a.IsCorrect).IsRequired().IsRequired();
         
-        builder.HasQueryFilter(a => !a.IsDeleted);
+        // builder.HasQueryFilter(a => !a.IsDeleted);
     }
 }

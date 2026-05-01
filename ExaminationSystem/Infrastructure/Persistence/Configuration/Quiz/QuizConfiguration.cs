@@ -20,6 +20,6 @@ public class QuizConfiguration : IEntityTypeConfiguration<Domain.Entities.Quiz.Q
             .HasForeignKey(q => q.QuizId)
             .OnDelete(DeleteBehavior.Restrict);
         
-        builder.HasQueryFilter(q => !q.IsDeleted);
+        // builder.HasQueryFilter(q => !q.IsDeleted);
     }
 }

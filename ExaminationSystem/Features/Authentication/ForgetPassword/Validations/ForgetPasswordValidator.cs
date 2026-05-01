@@ -5,7 +5,7 @@ namespace ExaminationSystem.Features.Authentication.ForgetPassword.Validations;
 
 public class ForgetPasswordValidator : AbstractValidator<ForgetPasswordRequest>
 {
-    ForgetPasswordValidator()
+    public ForgetPasswordValidator()
     {
         RuleFor(f => f.Email)
             .NotEmpty().WithMessage("Email is required")

@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Features\Common\Quiz\Commands\**" />
+    <Compile Remove="Features\StudentDashboard\SelectDiplomaViewQuizzes\**" />
+    <Content Remove="Features\Common\Quiz\Commands\**" />
+    <Content Remove="Features\StudentDashboard\SelectDiplomaViewQuizzes\**" />
+    <EmbeddedResource Remove="Features\Common\Quiz\Commands\**" />
+    <EmbeddedResource Remove="Features\StudentDashboard\SelectDiplomaViewQuizzes\**" />
+    <None Remove="Features\Common\Quiz\Commands\**" />
+    <None Remove="Features\StudentDashboard\SelectDiplomaViewQuizzes\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Features\QuizEngine\StartQuiz\Queries\CheckQuizAttemptsQueryHandler.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <PackageReference Include="MediatR" Version="14.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+</Project>
