@@ -13,16 +13,13 @@ namespace ExaminationSystem.Features.AdminManagement.Diplomas.Commends.UpdateDip
             UpdateDiplomaCommand request, CancellationToken cancellationToken)
         {
             var diploma = await unitOfWork.Diplomas
-                .GetById(request.DiplomaId)
-                .FirstOrDefaultAsync(cancellationToken)
+                .GetByIdAsync(request.DiplomaId)
                 ?? throw new NotFoundException(nameof(Diploma), request.DiplomaId);
 
             if (diploma.IsDeleted)
                 throw new NotFoundException(nameof(Diploma), request.DiplomaId);
 
-            unitOfWork.Diplomas.Update(diploma,
-                nameof(diploma.Title),
-                nameof(diploma.Description));
+            unitOfWork.Diplomas.Update(diploma);
 
             diploma.Title = request.Title;
             diploma.Description = request.Description;

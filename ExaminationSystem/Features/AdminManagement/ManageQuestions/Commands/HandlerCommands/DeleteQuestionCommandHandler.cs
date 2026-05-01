@@ -4,7 +4,6 @@ using ExaminationSystem.Domain.Contracts;
 using ExaminationSystem.Domain.Entities.Shared.Enums.Quiz;
 using ExaminationSystem.Features.AdminManagement.ManageQuestions.Commands;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace ExaminationSystem.Features.AdminManagement.ManageQuestions.Commands.HandlerCommands
 {
@@ -19,8 +18,7 @@ namespace ExaminationSystem.Features.AdminManagement.ManageQuestions.Commands.Ha
 
         public async Task<RequestResult<bool>> Handle(DeleteQuestionCommand request, CancellationToken cancellationToken)
         {
-            var question = await _uow.Questions.GetById(request.QuestionId, q => q.Quiz)
-                .FirstOrDefaultAsync(cancellationToken);
+            var question = await _uow.Questions.GetByIdAsync(request.QuestionId, q => q.Quiz);
 
             if (question == null)
             {
@@ -32,7 +30,7 @@ namespace ExaminationSystem.Features.AdminManagement.ManageQuestions.Commands.Ha
                 return RequestResult<bool>.Failure(ErrorCode.Conflict, "Unpublish quiz first or soft-delete question.");
             }
 
-            _uow.Questions.SoftDelete(request.QuestionId);
+            _uow.Questions.SoftDelete(question);
 
             return await _uow.SaveChangesAsync(cancellationToken) > 0
                 ? RequestResult<bool>.Success(true, "Question deleted successfully.")

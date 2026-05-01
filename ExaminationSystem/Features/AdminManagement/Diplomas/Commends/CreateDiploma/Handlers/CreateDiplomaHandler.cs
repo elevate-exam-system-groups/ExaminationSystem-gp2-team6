@@ -18,7 +18,7 @@ namespace ExaminationSystem.Features.AdminManagement.Diplomas.Commends.CreateDip
                 Status = DiplomaStatus.Draft
             };
 
-            unitOfWork.Diplomas.Add(diploma);
+            await unitOfWork.Diplomas.AddAsync(diploma);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
             return new CreateDiplomaResponse(

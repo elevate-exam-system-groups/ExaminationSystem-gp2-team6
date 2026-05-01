@@ -21,7 +21,7 @@ namespace ExaminationSystem.Features.QuizEngine.StartQuiz.Commands.HandlerComman
 
         public async Task<RequestResult<bool>> Handle(CreateQuizAttemptCommand request, CancellationToken cancellationToken)
         {
-            _uow.QuizAttempts.Add(new QuizAttempt
+            await _uow.QuizAttempts.AddAsync(new QuizAttempt
             {
                 QuizId = request.QuizId,
                 StudentId = request.StudentId,

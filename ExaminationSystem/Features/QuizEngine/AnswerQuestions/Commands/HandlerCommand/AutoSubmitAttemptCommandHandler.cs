@@ -16,7 +16,7 @@ namespace ExaminationSystem.Features.QuizEngine.AnswerQuestions.Commands.Handler
         }
         public async Task<RequestResult<bool>> Handle(AutoSubmitAttemptCommand request, CancellationToken cancellationToken)
         {
-            var attempt =await _uow.QuizAttempts.GetById(request.AttemptId).AsTracking().FirstOrDefaultAsync();
+            var attempt =await _uow.QuizAttempts.GetByIdAsync(request.AttemptId);
             if (attempt is null)
                 return RequestResult<bool>.Failure(ErrorCode.NotFound);
 

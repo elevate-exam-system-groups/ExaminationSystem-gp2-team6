@@ -7,88 +7,57 @@ using System.Linq.Expressions;
 
 namespace ExaminationSystem.Infrastructure.Persistence.Repositories
 {
-    public class GenericRepository
+    public class GenericRepository<T, TKey> : IGenericRepository<T, TKey> where T : BaseEntity<TKey>
     {
-    }
-}
+        private readonly AppDbContext _context;
+        private readonly DbSet<T> _dbSet;
 
-namespace Hotel.Persistence.Repositories
-{
-    public class GenericRepository<T, TKey>(AppDbContext _context) : IGenericRepository<T, TKey> where T : BaseEntity<TKey>
-    {
-        public IQueryable<T> GetAll()
+        public GenericRepository(AppDbContext context)
         {
-            var result = _context.Set<T>().AsQueryable();
-            return result;
+            _context = context;
+            _dbSet = _context.Set<T>();
         }
 
-        public IQueryable<T?> GetById(TKey id, params Expression<Func<T, object>>[] includes)
+        public IQueryable<T> GetAll(bool withNoTracking = true)
         {
-            var query = _context.Set<T>().Where(x => x.Id!.Equals(id));
+            var query = _dbSet.AsQueryable();
+            if (withNoTracking)
+                query = query.AsNoTracking(); 
+
+            return query;
+        }
+
+        public async Task<T?> GetByIdAsync(TKey id, params Expression<Func<T, object>>[] includes)
+        {
+            var query = _dbSet.AsQueryable();
+
             foreach (var include in includes)
             {
                 query = query.Include(include);
             }
-            return query;
+
+            return await query.FirstOrDefaultAsync(x => x.Id!.Equals(id));
         }
 
-        public void Add(T entity)
+        public async Task AddAsync(T entity)
         {
-             _context.Set<T>().Add(entity);
+            await _dbSet.AddAsync(entity);
         }
 
-        public void Update(T entity, params string[] modifiedParams)
+        public void Update(T entity)
         {
-            var local = _context.Set<T>().Local
-                .FirstOrDefault(x => x.Id!.Equals(entity.Id));
-
-            EntityEntry entry;
-            if (local == null)
-            {
-                _context.Set<T>().Attach(entity);
-                entry = _context.Entry(entity);
-            }
-            else
-            {
-                entry = _context.Entry(local);
-            }
-
-            foreach (var propName in modifiedParams)
-            {
-                var value = entity.GetType()
-                                  .GetProperty(propName)!
-                                  .GetValue(entity);
-
-                entry.Property(propName).CurrentValue = value;
-                entry.Property(propName).IsModified = true;
-            }
+            _dbSet.Update(entity);
         }
 
-        public void SoftDelete(TKey id)
+        public void SoftDelete(T entity)
         {
-            var local = _context.Set<T>().Local
-                .FirstOrDefault(x => x.Id!.Equals(id));
-
-            EntityEntry entry;
-            if (local == null)
-            {
-                var entity = Activator.CreateInstance<T>(); // Create a new instance of T 
-                entity.Id = id;
-
-                _context.Set<T>().Attach(entity);
-                entry = _context.Entry(entity);
-            }
-            else
-            {
-                entry = _context.Entry(local);
-            }
-            entry.Property(nameof(BaseEntity<TKey>.IsDeleted)).CurrentValue = true;
-            entry.Property(nameof(BaseEntity<TKey>.IsDeleted)).IsModified = true;
-
+            entity.IsDeleted = true;
+            _dbSet.Update(entity);
         }
+
         public async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate)
         {
-            return await _context.Set<T>().AnyAsync(predicate);
+            return await _dbSet.AnyAsync(predicate);
         }
     }
 }
