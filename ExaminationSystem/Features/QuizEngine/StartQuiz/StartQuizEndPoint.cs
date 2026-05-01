@@ -1,37 +1,47 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ExaminationSystem.Common.Data;
 using ExaminationSystem.Common.Views;
-using ExaminationSystem.Features.AdminManagement.CreateQuiz.ViewModel;
 using ExaminationSystem.Features.QuizEngine.StartQuiz.Orchestrator;
 using ExaminationSystem.Features.QuizEngine.StartQuiz.ViewModel;
-using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExaminationSystem.Features.QuizEngine.StartQuiz.CreateQuiz
 {
     [ApiController]
     [Route("api/quizzes/{id}/start")]
-    public class StartQuizEndPoint:ControllerBase
+    [Authorize]
+    public class StartQuizEndPoint : ControllerBase
     {
-        private readonly IValidator<StartQuizRequestViewModel> _validator;
-
-        public StartQuizEndPoint(IValidator<StartQuizRequestViewModel> validator)
-        {
-            _validator = validator;
-        }
         [HttpPost]
-        public async Task<RequestResult<StartQuizResponseViewModel>> StartQuiz([FromBody] StartQuizRequestViewModel request, [FromServices] IMediator mediator, [FromServices] IMapper _mapper)
+        public async Task<IActionResult> StartQuiz(
+            [FromBody] StartQuizRequestViewModel request,
+            [FromServices] IMediator mediator,
+            [FromServices] IMapper mapper,
+            CancellationToken cancellationToken)
         {
-            var validationResult = await _validator.ValidateAsync(request);
-            if (!validationResult.IsValid)
-                return RequestResult<StartQuizResponseViewModel>.Failure(ErrorCode.InvalidData, string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage)));
+            var result = await mediator.Send(
+                new StartQuizOrchestrator(request.QuizId, request.StudentId),
+                cancellationToken);
 
-            var result = await mediator.Send(new StartQuizOrchestrator(request.QuizId, request.StudentId));
             if (!result.IsSuccess)
-                return RequestResult<StartQuizResponseViewModel>.Failure(result.ErrorCode, result.Message);
+                return result.ErrorCode switch
+                {
+                    ErrorCode.NotFound => NotFound(new { result.Message }),
+                    ErrorCode.AttemptLimitReached => Conflict(new { result.Message }),
+                    _ => BadRequest(new { result.Message })
+                };
 
-            return RequestResult<StartQuizResponseViewModel>.Success(_mapper.Map<StartQuizResponseViewModel>(result.Data, opt => { opt.Items["QuizId"] = request.QuizId; opt.Items["StudentId"] = request.StudentId; }));
+            var viewModel = mapper.Map<StartQuizResponseViewModel>(
+                result.Data,
+                opt =>
+                {
+                    opt.Items["QuizId"] = request.QuizId;
+                    opt.Items["StudentId"] = request.StudentId;
+                });
+
+            return Ok(RequestResult<StartQuizResponseViewModel>.Success(viewModel));
         }
     }
 }

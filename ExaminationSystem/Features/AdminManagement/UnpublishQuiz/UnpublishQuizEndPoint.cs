@@ -1,27 +1,33 @@
-﻿using ExaminationSystem.Common.Data;
-using ExaminationSystem.Common.Views;
+using ExaminationSystem.Common.Data;
 using ExaminationSystem.Features.AdminManagement.UnpublishQuiz.Commands;
-using ExaminationSystem.Features.AdminManagement.UpdateQuiz.ViewModel;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExaminationSystem.Features.AdminManagement.UnpublishQuiz
 {
     [ApiController]
     [Route("api/admin/quizzes")]
+    [Authorize(Roles = "Admin")]
     public class UnpublishQuizEndPoint : ControllerBase
     {
         [HttpPut("{id}/unpublish")]
-        public async Task<EndpointResponse<bool>> UnpublishQuiz([FromRoute] int id, [FromServices] IMediator mediator)
+        public async Task<IActionResult> UnpublishQuiz(
+            [FromRoute] int id,
+            [FromServices] IMediator mediator,
+            CancellationToken cancellationToken)
         {
-            if (id <= 0)
-                return EndpointResponse<bool>.Failure(ErrorCode.InvalidData, "Invalid quiz ID.");
+            var result = await mediator.Send(new UnpublishQuizCommand(id), cancellationToken);
 
-            var quizUpdated = await mediator.Send(new UnpublishQuizCommand(id));
+            if (!result.IsSuccess)
+                return result.ErrorCode switch
+                {
+                    ErrorCode.NotFound => NotFound(new { result.Message }),
+                    ErrorCode.InvalidData => BadRequest(new { result.Message }),
+                    _ => BadRequest(new { result.Message })
+                };
 
-            return (quizUpdated.IsSuccess)
-                ? EndpointResponse<bool>.Success(quizUpdated.Data, quizUpdated.Message)
-                : EndpointResponse<bool>.Failure(quizUpdated.ErrorCode, quizUpdated.Message);
+            return Ok(new { result.Message });
         }
     }
 }

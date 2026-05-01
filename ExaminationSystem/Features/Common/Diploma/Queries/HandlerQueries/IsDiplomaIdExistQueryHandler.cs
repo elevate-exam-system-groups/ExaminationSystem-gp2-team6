@@ -17,11 +17,10 @@ namespace ExaminationSystem.Features.Common.Diploma.Queries.HandlerQueries
 
         public async Task<RequestResult<bool>> Handle(IsDiplomaIdExistQuery request, CancellationToken cancellationToken)
         {
-            var diplomaExists = await _uow.Diplomas.GetByIdAsync(request.DiplomaId);
-            if (diplomaExists != null)
-                return RequestResult<bool>.Success(true);
-                
-            return RequestResult<bool>.Failure(ErrorCode.NotFound, "Diploma not found");
+            var exists = await _uow.Diplomas.ExistsAsync(d => d.Id == request.DiplomaId && !d.IsDeleted);
+            return exists
+                ? RequestResult<bool>.Success(true)
+                : RequestResult<bool>.Failure(ErrorCode.NotFound, "Diploma not found");
         }
     }
 }

@@ -28,8 +28,6 @@ public class RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, RequestR
 
     public async Task<RequestResult<TokensDto>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(request.RefreshToken)) return RequestResult<TokensDto>.Failure(ErrorCode.Unauthorized, "Invalid refresh token");
-        
         var hashedToken = _hasher.Hash(request.RefreshToken);
 
         var storedToken = await _context.UserRefreshTokens

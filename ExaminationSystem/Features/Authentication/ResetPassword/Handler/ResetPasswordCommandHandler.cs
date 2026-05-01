@@ -26,8 +26,6 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
     
     public async Task<RequestResult<ResetPasswordDto>> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
     {
-        if (request.Password != request.ConfirmedPassword) return RequestResult<ResetPasswordDto>.Failure(ErrorCode.PasswordNotMatch, "Passwords do not match");
-
         var hashedToken = _hasher.Hash(request.Token);
 
         var token = await _dbContext.PasswordResetTemporaryTokens.FirstOrDefaultAsync(x => x.UserId == request.UserId && x.Token == hashedToken, cancellationToken);
