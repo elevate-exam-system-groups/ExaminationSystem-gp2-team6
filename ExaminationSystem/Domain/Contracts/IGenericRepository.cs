@@ -2,14 +2,13 @@
 
 namespace ExaminationSystem.Domain.Contracts
 {
-    public interface IGenericRepository<T, TKey>
+    public interface IGenericRepository<T, TKey> where T : class
     {
-        IQueryable<T> GetAll();
-        IQueryable<T?> GetById(TKey id, params Expression<Func<T, object>>[] includes);
-        void Add(T entity);
-        void Update(T entity, params string[] modifiedParams);
-        void SoftDelete(TKey id);
+        IQueryable<T> GetAll(bool withNoTracking = true);
+        Task<T?> GetByIdAsync(TKey id, params Expression<Func<T, object>>[] includes);
+        Task AddAsync(T entity);
+        void Update(T entity);
+        void SoftDelete(T entity);
         Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate);
-
     }
 }

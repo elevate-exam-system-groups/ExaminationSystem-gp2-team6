@@ -18,7 +18,7 @@ namespace ExaminationSystem.Features.Common.Quiz.Queries.HandlerQueries
 
         public async Task<RequestResult<Domain.Entities.Quiz.Quiz>> Handle(GetQuizByIdQuery request, CancellationToken cancellationToken)
         {
-            var quiz = await _uow.Quizzes.GetById(request.QuizId).FirstOrDefaultAsync(cancellationToken);
+            var quiz = await _uow.Quizzes.GetByIdAsync(request.QuizId);
             if (quiz != null)
                 return RequestResult<Domain.Entities.Quiz.Quiz>.Success(quiz);
                 

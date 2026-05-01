@@ -38,7 +38,7 @@ namespace ExaminationSystem.Features.AdminManagement.ManageQuestions.Commands.Ha
             var question = _mapper.Map<Question>(request);
             question.OrderIndex = currentMaxIndex + 1;
 
-            _uow.Questions.Add(question);
+            await _uow.Questions.AddAsync(question);
 
             return await _uow.SaveChangesAsync(cancellationToken) > 0
                 ? RequestResult<int>.Success(question.Id, "Question added successfully.")

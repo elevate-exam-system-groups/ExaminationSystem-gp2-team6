@@ -3,7 +3,6 @@ using ExaminationSystem.Domain.Contracts;
 using ExaminationSystem.Domain.Entities.Diploma;
 using ExaminationSystem.Domain.Entities.Shared.Enums.Diploma;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace ExaminationSystem.Features.AdminManagement.Diplomas.Commends.DeleteDiploma.Handler
 {
@@ -14,9 +13,7 @@ namespace ExaminationSystem.Features.AdminManagement.Diplomas.Commends.DeleteDip
             DeleteDiplomaCommand request, CancellationToken cancellationToken)
         {
             var diploma = await unitOfWork.Diplomas
-                .GetById(request.DiplomaId)
-                .Include(d => d.StudentEnrollments)
-                .FirstOrDefaultAsync(cancellationToken)
+                .GetByIdAsync(request.DiplomaId, d => d.StudentEnrollments)
                 ?? throw new NotFoundException(nameof(Diploma), request.DiplomaId);
 
             if (diploma.IsDeleted)
@@ -29,7 +26,8 @@ namespace ExaminationSystem.Features.AdminManagement.Diplomas.Commends.DeleteDip
                     "Cannot delete a published diploma with active student enrollments.");
             }
 
-            unitOfWork.Diplomas.SoftDelete(request.DiplomaId);
+            unitOfWork.Diplomas.SoftDelete(diploma);
+
             await unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }

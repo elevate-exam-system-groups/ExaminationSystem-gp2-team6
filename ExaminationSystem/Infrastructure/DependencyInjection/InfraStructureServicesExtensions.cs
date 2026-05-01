@@ -3,7 +3,6 @@ using ExaminationSystem.Domain.Contracts;
 using ExaminationSystem.Infrastructure.Persistence.Context;
 using ExaminationSystem.Infrastructure.Persistence.Repositories;
 using ExaminationSystem.Infrastructure.Persistence.Seed;
-using Hotel.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 

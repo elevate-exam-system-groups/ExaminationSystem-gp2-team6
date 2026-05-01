@@ -8,7 +8,6 @@ using ExaminationSystem.Domain.Entities.Quiz;
 using ExaminationSystem.Domain.Entities.QuizAttempt;
 using ExaminationSystem.Domain.Entities.User;
 using ExaminationSystem.Infrastructure.Persistence.Context;
-using Hotel.Persistence.Repositories;
 
 namespace ExaminationSystem.Infrastructure.Persistence.Repositories
 {

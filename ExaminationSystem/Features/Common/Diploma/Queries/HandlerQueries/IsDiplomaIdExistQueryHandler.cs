@@ -17,7 +17,7 @@ namespace ExaminationSystem.Features.Common.Diploma.Queries.HandlerQueries
 
         public async Task<RequestResult<bool>> Handle(IsDiplomaIdExistQuery request, CancellationToken cancellationToken)
         {
-            var diplomaExists = await _uow.Diplomas.GetById(request.DiplomaId).FirstOrDefaultAsync(cancellationToken);
+            var diplomaExists = await _uow.Diplomas.GetByIdAsync(request.DiplomaId);
             if (diplomaExists != null)
                 return RequestResult<bool>.Success(true);
                 

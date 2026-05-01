@@ -23,8 +23,7 @@ namespace ExaminationSystem.Features.AdminManagement.ManageQuestions.Commands.Ha
 
         public async Task<RequestResult<bool>> Handle(UpdateQuestionCommand request, CancellationToken cancellationToken)
         {
-            var question = await _uow.Questions.GetById(request.QuestionId, q => q.AnswerOptions)
-                .FirstOrDefaultAsync(cancellationToken);
+            var question = await _uow.Questions.GetByIdAsync(request.QuestionId, q => q.AnswerOptions);
 
             if (question == null)
             {
@@ -40,7 +39,7 @@ namespace ExaminationSystem.Features.AdminManagement.ManageQuestions.Commands.Ha
             var optionsToRemove = question.AnswerOptions.Where(o => !incomingOptionIds.Contains(o.Id)).ToList();
             foreach (var optionToRemove in optionsToRemove)
             {
-                _uow.AnswerOptions.SoftDelete(optionToRemove.Id);
+                _uow.AnswerOptions.SoftDelete(optionToRemove);
             }
 
             

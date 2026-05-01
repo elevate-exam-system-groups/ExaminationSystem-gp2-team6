@@ -22,7 +22,7 @@ namespace ExaminationSystem.Features.AdminManagement.CreateQuiz.Commands.Handler
         {
             var quiz = _mapper.Map<Quiz>(request);
 
-            _uow.Quizzes.Add(quiz);
+            await _uow.Quizzes.AddAsync(quiz);
             return await _uow.SaveChangesAsync(cancellationToken) >0
                 ? RequestResult<bool>.Success(true, "Quiz created successfully.")
                 : RequestResult<bool>.Failure(ErrorCode.DatabaseError, "Failed to create quiz.");
