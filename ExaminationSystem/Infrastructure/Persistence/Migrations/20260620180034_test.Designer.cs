@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExaminationSystem.Infrastructure.Persistence.DB.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260411130242_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260620180034_test")]
+    partial class test
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,6 +52,81 @@ namespace ExaminationSystem.Infrastructure.Persistence.DB.Migrations
                     b.HasIndex("QuestionId");
 
                     b.ToTable("AnswerOptions", (string)null);
+                });
+
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.AttemptAnswer.AttemptAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AnsweredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("AttemptId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuizAttemptId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SelectedOptionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("QuizAttemptId");
+
+                    b.HasIndex("SelectedOptionId");
+
+                    b.ToTable("AttemptAnswer");
+                });
+
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.AttemptResult.AttemptResult", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AttemptId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CorrectAnswerOptionId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuizAttemptId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StudentAnswerOptionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("QuizAttemptId");
+
+                    b.ToTable("AttemptResult");
                 });
 
             modelBuilder.Entity("ExaminationSystem.Domain.Entities.Diploma.Diploma", b =>
@@ -94,11 +169,53 @@ namespace ExaminationSystem.Infrastructure.Persistence.DB.Migrations
                     b.Property<DateTime>("EnrolledAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.HasKey("StudentId", "DiplomaId");
 
                     b.HasIndex("DiplomaId");
 
                     b.ToTable("StudentDiplomaEnrollments", (string)null);
+                });
+
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.PasswordResetTemporaryToken.PasswordResetTemporaryToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PasswordResetTemporaryTokens");
                 });
 
             modelBuilder.Entity("ExaminationSystem.Domain.Entities.Question.Question", b =>
@@ -182,7 +299,7 @@ namespace ExaminationSystem.Infrastructure.Persistence.DB.Migrations
                     b.ToTable("Quizzes", (string)null);
                 });
 
-            modelBuilder.Entity("ExaminationSystem.Domain.Entities.Quiz.QuizAttempt", b =>
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.QuizAttempt.QuizAttempt", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -193,16 +310,27 @@ namespace ExaminationSystem.Infrastructure.Persistence.DB.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool?>("Passed")
+                        .HasColumnType("bit");
+
                     b.Property<int>("QuizId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Score")
+                    b.Property<double?>("Score")
+                        .IsRequired()
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<Guid>("StudentId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("SubmittedAt")
+                    b.Property<DateTime?>("SubmittedAt")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -306,6 +434,99 @@ namespace ExaminationSystem.Infrastructure.Persistence.DB.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.User.LoginLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LoggedInAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("LoginLogs");
+                });
+
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.User.UserOtp.UserOtp", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "IsUsed", "ExpiresAt", "Code");
+
+                    b.ToTable("UserOtps", (string)null);
+                });
+
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.User.UserRefreshToken.UserRefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRefreshTokens");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -450,6 +671,50 @@ namespace ExaminationSystem.Infrastructure.Persistence.DB.Migrations
                     b.Navigation("Question");
                 });
 
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.AttemptAnswer.AttemptAnswer", b =>
+                {
+                    b.HasOne("ExaminationSystem.Domain.Entities.Question.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExaminationSystem.Domain.Entities.QuizAttempt.QuizAttempt", "QuizAttempt")
+                        .WithMany("AttemptAnswers")
+                        .HasForeignKey("QuizAttemptId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExaminationSystem.Domain.Entities.AnswerOption.AnswerOption", "SelectedOption")
+                        .WithMany()
+                        .HasForeignKey("SelectedOptionId");
+
+                    b.Navigation("Question");
+
+                    b.Navigation("QuizAttempt");
+
+                    b.Navigation("SelectedOption");
+                });
+
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.AttemptResult.AttemptResult", b =>
+                {
+                    b.HasOne("ExaminationSystem.Domain.Entities.Question.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExaminationSystem.Domain.Entities.QuizAttempt.QuizAttempt", "QuizAttempt")
+                        .WithMany("AttemptResults")
+                        .HasForeignKey("QuizAttemptId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+
+                    b.Navigation("QuizAttempt");
+                });
+
             modelBuilder.Entity("ExaminationSystem.Domain.Entities.Diploma.StudentDiplomaEnrollment", b =>
                 {
                     b.HasOne("ExaminationSystem.Domain.Entities.Diploma.Diploma", "Diploma")
@@ -467,6 +732,17 @@ namespace ExaminationSystem.Infrastructure.Persistence.DB.Migrations
                     b.Navigation("Diploma");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.PasswordResetTemporaryToken.PasswordResetTemporaryToken", b =>
+                {
+                    b.HasOne("ExaminationSystem.Domain.Entities.User.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ExaminationSystem.Domain.Entities.Question.Question", b =>
@@ -491,7 +767,7 @@ namespace ExaminationSystem.Infrastructure.Persistence.DB.Migrations
                     b.Navigation("Diploma");
                 });
 
-            modelBuilder.Entity("ExaminationSystem.Domain.Entities.Quiz.QuizAttempt", b =>
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.QuizAttempt.QuizAttempt", b =>
                 {
                     b.HasOne("ExaminationSystem.Domain.Entities.Quiz.Quiz", "Quiz")
                         .WithMany("QuizAttempts")
@@ -508,6 +784,39 @@ namespace ExaminationSystem.Infrastructure.Persistence.DB.Migrations
                     b.Navigation("Quiz");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.User.LoginLog", b =>
+                {
+                    b.HasOne("ExaminationSystem.Domain.Entities.User.ApplicationUser", "User")
+                        .WithMany("LoginLogs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.User.UserOtp.UserOtp", b =>
+                {
+                    b.HasOne("ExaminationSystem.Domain.Entities.User.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.User.UserRefreshToken.UserRefreshToken", b =>
+                {
+                    b.HasOne("ExaminationSystem.Domain.Entities.User.ApplicationUser", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -580,9 +889,20 @@ namespace ExaminationSystem.Infrastructure.Persistence.DB.Migrations
                     b.Navigation("QuizAttempts");
                 });
 
+            modelBuilder.Entity("ExaminationSystem.Domain.Entities.QuizAttempt.QuizAttempt", b =>
+                {
+                    b.Navigation("AttemptAnswers");
+
+                    b.Navigation("AttemptResults");
+                });
+
             modelBuilder.Entity("ExaminationSystem.Domain.Entities.User.ApplicationUser", b =>
                 {
+                    b.Navigation("LoginLogs");
+
                     b.Navigation("QuizAttempts");
+
+                    b.Navigation("RefreshTokens");
 
                     b.Navigation("StudentDiplomaEnrollments");
                 });

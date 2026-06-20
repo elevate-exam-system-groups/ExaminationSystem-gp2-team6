@@ -1,11 +1,12 @@
 using System.Security.Claims;
+using ExaminationSystem.Common.Data;
 using ExaminationSystem.Common.Views;
-using ExaminationSystem.Features.StudentDashboard.ViewDashboard.Queries;
+using ExaminationSystem.Features.StudentDashboard.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ExaminationSystem.Features.StudentDashboard.ViewDashboard;
+namespace ExaminationSystem.Features.StudentDashboard;
 
 [ApiController]
 [Route("api/student")]
