@@ -1,11 +1,7 @@
-using System.Security.Claims;
-using System.Text;
-using ExaminationSystem.Common.Behaviors;
+using ExaminationSystem.Common.Exceptions;
 using ExaminationSystem.Contracts.Seed;
 using ExaminationSystem.Extensions.Infrastructure;
-using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using ExaminationSystem.Infrastructure.DependencyInjection;
 
 namespace ExaminationSystem
 {
@@ -15,68 +11,44 @@ namespace ExaminationSystem
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
+            // Core Services
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
-            builder.Services.AddMemoryCache();
-            builder.Services.AddMediatR(cfg =>
+            builder.Services.AddSwaggerGen(options =>
             {
-                cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
-                cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
+                options.CustomSchemaIds(type => type.FullName);
             });
 
-            var jwtKey = builder.Configuration["Jwt:Key"]
-                         ?? throw new InvalidOperationException("Jwt:Key is not configured.");
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                        ValidAudience = builder.Configuration["Jwt:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-                        RoleClaimType = ClaimTypes.Role,
-                        NameClaimType = ClaimTypes.NameIdentifier
-                    };
-                });
-            builder.Services.AddAuthorization();
-
-            #region Dependency Injection Services
-            
-            // InfraStructure
+            // Dependency Injection
+            builder.Services.AddApplicationServices();
             builder.Services.AddInfraStructureServices(builder.Configuration);
-            
-            #endregion
-            
+            builder.Services.AddIdentityAndAuthServices(builder.Configuration);
+
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // HTTP request pipeline
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
+            // Middlewares
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseHttpsRedirection();
 
+            // Auth Pipeline
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
-            
+
+            // Data Seeding
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 var seeder = services.GetRequiredService<IDataSeeding>();
-    
+
                 await seeder.DataSeedAsync();
                 await seeder.IdentityDataSeedAsync();
             }

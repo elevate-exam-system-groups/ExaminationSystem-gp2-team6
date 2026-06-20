@@ -1,7 +1,7 @@
 using ExaminationSystem.Common.Views;
 using ExaminationSystem.Domain.Entities.Shared.Enums.Diploma;
 using ExaminationSystem.Features.Diplomas.Queries;
-using ExaminationSystem.Infrastructure.Persistence.DB.Context;
+using ExaminationSystem.Infrastructure.Persistence.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

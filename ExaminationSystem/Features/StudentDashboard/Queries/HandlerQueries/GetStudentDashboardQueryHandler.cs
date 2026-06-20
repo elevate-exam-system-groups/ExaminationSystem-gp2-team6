@@ -1,7 +1,7 @@
 using ExaminationSystem.Common.Views;
 using ExaminationSystem.Features.StudentDashboard;
 using ExaminationSystem.Features.StudentDashboard.Queries;
-using ExaminationSystem.Infrastructure.Persistence.DB.Context;
+using ExaminationSystem.Infrastructure.Persistence.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -51,9 +51,9 @@ public class GetStudentDashboardQueryHandler : IRequestHandler<GetStudentDashboa
             {
                 AttemptId = a.Id,
                 QuizTitle = a.QuizTitle,
-                Score = a.Score,
-                Passed = a.Score >= a.PassScore,
-                SubmittedAt = a.SubmittedAt
+                Score = a.Score??0,
+                Passed = a.PassScore != 0 ? a.Score / a.PassScore >= 1.0 : false,
+                SubmittedAt = a.SubmittedAt?? DateTime.MinValue
             })
             .ToList();
 
