@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ExaminationSystem.Infrastructure.Persistence.DB.Configuration.PasswordResetTemporaryToken;
+namespace ExaminationSystem.Infrastructure.Persistence.Configuration.PasswordResetTemporaryToken;
 
 public class PasswordResetTemporaryTokenConfiguration : IEntityTypeConfiguration<Domain.Entities.PasswordResetTemporaryToken.PasswordResetTemporaryToken>
 {

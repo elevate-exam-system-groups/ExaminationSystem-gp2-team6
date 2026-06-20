@@ -17,6 +17,6 @@ public class DiplomaConfiguration : IEntityTypeConfiguration<Domain.Entities.Dip
             .HasForeignKey(q => q.DiplomaId)
             .OnDelete(DeleteBehavior.Restrict);
         
-        builder.HasQueryFilter(d => !d.IsDeleted);
+        // builder.HasQueryFilter(d => !d.IsDeleted);
     }
 }

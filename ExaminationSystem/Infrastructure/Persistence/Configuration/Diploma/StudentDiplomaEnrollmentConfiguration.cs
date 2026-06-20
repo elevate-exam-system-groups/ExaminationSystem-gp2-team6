@@ -24,6 +24,6 @@ public class StudentDiplomaEnrollmentConfiguration : IEntityTypeConfiguration<St
             .HasForeignKey(e => e.DiplomaId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasQueryFilter(e => !e.Diploma.IsDeleted);
+        // builder.HasQueryFilter(e => !e.Diploma.IsDeleted);
     }
 }

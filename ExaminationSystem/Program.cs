@@ -1,6 +1,7 @@
 using ExaminationSystem.Common.Exceptions;
 using ExaminationSystem.Contracts.Seed;
 using ExaminationSystem.Extensions.Infrastructure;
+using ExaminationSystem.Infrastructure.DependencyInjection;
 
 namespace ExaminationSystem
 {
